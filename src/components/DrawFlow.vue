@@ -1,6 +1,8 @@
 <template>
     <div id="drawflow"></div>
-    <button @click="createNumberNode">Create</button>
+    <button @click="createNumberNode">Create number node</button>
+    <button @click="createOperationNode">Create operation node</button>
+    <button @click="getOperationInfo">get Operation information</button>
  
     
 </template>
@@ -9,7 +11,7 @@
 <script>
 import{shallowRef,onMounted, h, render, getCurrentInstance} from 'vue'
 import numberNode from './numberNode.vue'
-import textNode from './textNode.vue'
+import operationNode from './operationNode.vue'
 
 
 import DrawFlow from 'drawflow'
@@ -24,12 +26,17 @@ export default {
         const listNodes = [
             {
                 item:'numberNode',
-                input:1,
+                input:0,
                 output:1
             },
             {
                 item:'textNode',
                 input:1,
+                output:1
+            },
+            {
+                item:'operationNode',
+                input:2,
                 output:1
             }
         ]
@@ -60,6 +67,16 @@ export default {
                 addNodeToDrawFlow("numberNode",0,0)
             
         }
+
+        const createOperationNode = () => {
+            addNodeToDrawFlow("operationNode",0,0)
+        }
+
+        const getOperationInfo = () => {
+            const op = editor.value.getNodeFromId(3)
+            const node = editor.value.getNodeFromId(1)
+            console.log(op,node)
+        }
         onMounted(() => {
             const id = document.getElementById('drawflow')
             editor.value = new DrawFlow(  
@@ -70,7 +87,7 @@ export default {
             editor.value.start()
 
             editor.value.registerNode("numberNode",numberNode,{},{})
-            editor.value.registerNode("textNode",textNode,{},{})
+            editor.value.registerNode("operationNode",operationNode,{},{})
 
             
             
@@ -79,7 +96,9 @@ export default {
         })
 
         return {
-            createNumberNode
+            createNumberNode,
+            createOperationNode,
+            getOperationInfo
         }
     }
 }
