@@ -27,17 +27,15 @@ export default {
             {
                 item:'numberNode',
                 input:0,
+                data:{number:0},
                 output:1
             },
-            {
-                item:'textNode',
-                input:1,
-                output:1
-            },
+         
             {
                 item:'operationNode',
                 input:2,
-                output:1
+                output:1,
+                data:{}
             }
         ]
         const editor = shallowRef({})
@@ -57,7 +55,7 @@ export default {
                 pos_x,
                 pos_y,
                 name,
-                {},
+                nodeSelected.data,
                 name,
                 "vue"
             );
