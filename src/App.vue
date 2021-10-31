@@ -1,18 +1,14 @@
+<script setup>
+import drawflow from './components/DrawFlow.vue'
+
+
+</script>
+
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <drawflow />
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
-</script>
 
 <style>
 #app {
