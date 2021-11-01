@@ -9,7 +9,7 @@
 
 
 <script>
-import{shallowRef,onMounted, h, render, getCurrentInstance} from 'vue'
+import{shallowRef,onMounted, h, render, getCurrentInstance, readonly} from 'vue'
 import numberNode from './numberNode.vue'
 import operationNode from './operationNode.vue'
 
@@ -23,21 +23,19 @@ export default {
 
     setup()
     {
-        const listNodes = [
+        const listNodes = readonly([
             {
                 item:'numberNode',
                 input:0,
-                data:{number:0},
                 output:1
             },
          
             {
                 item:'operationNode',
                 input:2,
-                output:1,
-                data:{}
+                output:1
             }
-        ]
+        ])
         const editor = shallowRef({})
         const Vue = { version: 3, h, render };
         const internalInstance = getCurrentInstance();
@@ -48,6 +46,7 @@ export default {
 
 
             const nodeSelected = listNodes.find((ele) => ele.item == name);
+            console.log(nodeSelected)
             editor.value.addNode(
                 name,
                 nodeSelected.input,
@@ -55,10 +54,12 @@ export default {
                 pos_x,
                 pos_y,
                 name,
-                nodeSelected.data,
+                {},
                 name,
                 "vue"
             );
+
+            console.log(nodeSelected.data)
         }
 
         const createNumberNode = () => {
@@ -87,6 +88,15 @@ export default {
             editor.value.registerNode("numberNode",numberNode,{},{})
             editor.value.registerNode("operationNode",operationNode,{},{})
 
+        
+            editor.value.on("connectionCreated", function(info) {
+            const nodeInfo = editor.value.getNodeFromId(info.output_id);
+            if(nodeInfo.outputs[info.output_class].connections.length > 1) {
+                const removeConnectionInfo = nodeInfo.outputs[info.output_class].connections[0];
+                editor.value.removeSingleConnection(info.output_id, removeConnectionInfo.node, info.output_class, removeConnectionInfo.output);
+            }
+            });
+
             
             
 
@@ -110,7 +120,7 @@ export default {
     #drawflow{
         border:1px solid black;
         width:100%;
-        height:50vh;
+        height:60vh;
         text-align: initial;
     }
 </style>
