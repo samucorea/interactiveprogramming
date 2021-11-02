@@ -8,7 +8,10 @@
 <script>
 import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
     export default{
-        setup()
+        props:{
+            execute: Boolean
+        },
+        setup(props)
         {
 
             const root = ref(null);
@@ -34,6 +37,11 @@ import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
                 await nextTick()
                 
                 nodeId.value = root.value.parentElement.parentElement.id.slice(5)
+
+                if(props.execute)
+                {
+                    console.log('hola')
+                }
 
                   df.on('connectionCreated', function(connections) {
                     if(connections.input_id === nodeId.value)

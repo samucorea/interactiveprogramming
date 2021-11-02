@@ -2,14 +2,14 @@
     <div id="drawflow"></div>
     <button @click="createNumberNode">Create number node</button>
     <button @click="createOperationNode">Create operation node</button>
-    <button @click="getOperationInfo">get Operation information</button>
+    <button @click="executeNodes">Execute nodes</button>
  
     
 </template>
 
 
 <script>
-import{shallowRef,onMounted, h, render, getCurrentInstance, readonly} from 'vue'
+import{shallowRef,onMounted, h, render, getCurrentInstance, readonly, ref} from 'vue'
 import numberNode from './numberNode.vue'
 import operationNode from './operationNode.vue'
 
@@ -32,11 +32,12 @@ export default {
          
             {
                 item:'operationNode',
-                input:2,
+                input:1,
                 output:1
             }
         ])
         const editor = shallowRef({})
+        const executeCode = ref(false)
         const Vue = { version: 3, h, render };
         const internalInstance = getCurrentInstance();
         
@@ -58,8 +59,6 @@ export default {
                 name,
                 "vue"
             );
-
-            console.log(nodeSelected.data)
         }
 
         const createNumberNode = () => {
@@ -71,12 +70,13 @@ export default {
             addNodeToDrawFlow("operationNode",0,0)
         }
 
-        const getOperationInfo = () => {
-            const op = editor.value.getNodeFromId(3)
-            const node = editor.value.getNodeFromId(1)
-            console.log(op,node)
+        const executeNodes = () => {
+            console.log('hey')
+            executeCode.value = !executeCode.value
         }
+        
         onMounted(() => {
+            console.log(executeCode.value)
             const id = document.getElementById('drawflow')
             editor.value = new DrawFlow(  
                 id,
@@ -86,7 +86,7 @@ export default {
             editor.value.start()
 
             editor.value.registerNode("numberNode",numberNode,{},{})
-            editor.value.registerNode("operationNode",operationNode,{},{})
+            editor.value.registerNode("operationNode",operationNode,{execute:executeCode.value},{})
 
         
             editor.value.on("connectionCreated", function(info) {
@@ -106,7 +106,7 @@ export default {
         return {
             createNumberNode,
             createOperationNode,
-            getOperationInfo
+            executeNodes
         }
     }
 }
