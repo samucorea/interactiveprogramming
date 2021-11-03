@@ -11,11 +11,14 @@ import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
         props:{
             execute: Boolean
         },
-        setup(props)
+        setup()
         {
 
             const root = ref(null);
             const nodeId = ref(0)
+            const nodeData = ref({})
+            const nodesConnected = ref([])
+            const numbersConnected = ref([])
 
             let sum = ref(0)
             let df = getCurrentInstance().appContext.config.globalProperties.$df.value
@@ -24,29 +27,37 @@ import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
                 sum.value = 0
                 const operationNode = df.getNodeFromId(nodeId.value)
 
-                for(let key of Object.keys(operationNode.inputs))
-                     {
-                         operationNode.inputs[key].connections.forEach(connection => {
-                             const connectedNode = df.getNodeFromId(connection.node)
-                             sum.value += parseInt(connectedNode.data.number)
-                         })
-                     }
+               
+                operationNode.inputs.input_1.connections.forEach(connection => {
+                    const connectedNode = df.getNodeFromId(connection.node)
+                    sum.value += parseInt(connectedNode.data.number)
+                })
+                     
 
             }
+
+            // watch(sum,(sum,prevSum) => {
+            //     console.log(prevSum)
+            //     df.updateNodeDataFromId(nodeId.value,{sum, numbers: [...numbersConnected.value]})
+            // })
             onMounted(async () => {
                 await nextTick()
                 
                 nodeId.value = root.value.parentElement.parentElement.id.slice(5)
+                nodeData.value = df.getNodeFromId(nodeId.value)
 
-                if(props.execute)
-                {
-                    console.log('hola')
-                }
+              
 
                   df.on('connectionCreated', function(connections) {
                     if(connections.input_id === nodeId.value)
                     {
                         const connectedNode = df.getNodeFromId(connections.output_id)
+                       
+                        nodesConnected.value.push(connectedNode.id)
+                        console.log(nodesConnected.value)
+                        numbersConnected.value.push(connectedNode.data.number)
+
+                        
                         if(connectedNode.name === 'numberNode')
                         {
                             sum.value += parseInt(connectedNode.data.number)
@@ -60,6 +71,8 @@ import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
                        if(connections.input_id === nodeId.value)
                     {
                         const connectedNode = df.getNodeFromId(connections.output_id)
+                        nodesConnected.value.splice(nodesConnected.value.indexOf(connections.output_id),1)
+                        
                         if(connectedNode.name === 'numberNode')
                         {
                             sum.value -= parseInt(connectedNode.data.number)
@@ -70,22 +83,26 @@ import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
                   })
 
                  df.on('nodeDataChanged',function(id) {
-               
-                     const operationNode = df.getNodeFromId(nodeId.value)
-                     const changedNode = df.getNodeFromId(id)
-
-                     console.log(changedNode)
-
-                     for(let key of Object.keys(operationNode.inputs))
+                     
+                     
+                     if(nodesConnected.value.includes(parseInt(id)))
                      {
-                         operationNode.inputs[key].connections.forEach(connection => {
-                             if (parseInt(connection.node) === changedNode.id)
-                             {
-                                 updateSum()
-                                 return;
-                             }
-                         })
+
+                         updateSum()
+                        
+                        // const operationNode = df.getNodeFromId(nodeId.value)
+                        // const changedNode = df.getNodeFromId(id)
+                      
+                        // operationNode.inputs.input_1.connections.forEach(connection => {
+                        //         if (parseInt(connection.node) === changedNode.id)
+                        //         {
+                        //             updateSum()
+                        //             return;
+                        //         }
+                        //     })
+                        
                      }
+                    
 
                      
 
