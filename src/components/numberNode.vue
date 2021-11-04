@@ -1,7 +1,7 @@
 <template>
     <div ref="root">
       <p>Number</p>
-      <input type="number" @change="handleChange"  v-model="number" df-number  />
+      <input type="number" @change="handleChange"  v-model="result" df-number  />
       
     </div>
 </template>
@@ -18,7 +18,8 @@ import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
         setup() {
             const root = ref(null);
             const nodeId = ref(0)
-            const number = ref(0)
+            
+            const result = ref(0)
             const nodeData = ref({})
           
             
@@ -31,13 +32,13 @@ import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
    
                nodeId.value = root.value.parentElement.parentElement.id.slice(5)
                nodeData.value = df.getNodeFromId(nodeId.value)
-               number.value = nodeData.value.data.number 
+               result.value = nodeData.value.data.result 
                
                
            })
 
            const handleChange = () => {
-               nodeData.value.data.number = parseInt(number.value)
+               nodeData.value.data.result = parseInt(result.value)
                
                
                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
@@ -46,7 +47,7 @@ import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
 
 
             return {
-                number,
+                result,
                 root,
                 handleChange
             }

@@ -3,7 +3,10 @@
     <button @click="createNumberNode">Create number node</button>
     <button @click="createOperationNode">Create operation node</button>
     <button @click="createAssignNode">Create assign node</button>
+    <button @click="createConditionalNode">Create conditional node</button>
+    <button @click="returnHomeModule">Return to main code block</button>
     <button @click="executeNodes">Execute nodes</button>
+    
  
     
 </template>
@@ -14,11 +17,12 @@ import{shallowRef,onMounted, h, render, getCurrentInstance, readonly} from 'vue'
 import numberNode from './numberNode.vue'
 import operationNode from './operationNode.vue'
 import assignNode from './assignNode.vue'
-
+import conditionalNode from './conditionalNode.vue'
 
 import DrawFlow from 'drawflow'
 //eslint-disable-next-line
 import styleDrawflow from "drawflow/dist/drawflow.min.css";
+import useEmitter from './useEmitter.js'
 
 export default {
     name:'drawflow',
@@ -41,12 +45,18 @@ export default {
                 item:'assignNode',
                 input:1,
                 output:1
+            },
+            {
+                item:'conditionalNode',
+                input:2,
+                output:0
             }
         ])
         const editor = shallowRef({})
         // const executeCode = ref(false)
         const Vue = { version: 3, h, render };
         const internalInstance = getCurrentInstance();
+        const emitter = useEmitter()
         
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
         
@@ -54,7 +64,6 @@ export default {
 
 
             const nodeSelected = listNodes.find((ele) => ele.item == name);
-            console.log(nodeSelected)
             editor.value.addNode(
                 name,
                 nodeSelected.input,
@@ -74,10 +83,23 @@ export default {
         }
 
         const createOperationNode = () => {
+            editor.value.changeModule('Home');
             addNodeToDrawFlow("operationNode",0,0)
         }
         const createAssignNode = () => {
             addNodeToDrawFlow("assignNode",0,0)
+        }
+        const createConditionalNode = () => {
+            addNodeToDrawFlow("conditionalNode",0,0)
+        }
+
+        function executeNodes() {
+            emitter.emit('execute-nodes')
+            
+        }
+        function returnHomeModule()
+        {
+            editor.value.changeModule('Home')
         }
 
   
@@ -94,6 +116,7 @@ export default {
             editor.value.registerNode("numberNode",numberNode,{},{})
             editor.value.registerNode("operationNode",operationNode,{},{})
             editor.value.registerNode("assignNode",assignNode,{},{})
+            editor.value.registerNode("conditionalNode", conditionalNode,{},{})
 
         
             editor.value.on("connectionCreated", function(info) {
@@ -113,7 +136,10 @@ export default {
         return {
             createNumberNode,
             createOperationNode,
-            createAssignNode
+            createAssignNode,
+            createConditionalNode,
+            returnHomeModule,
+            executeNodes
         }
     }
 }
