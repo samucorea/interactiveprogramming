@@ -4,7 +4,7 @@
           <option id="Number">Number</option>
           <option id="useVariable">Use variable</option>
       </select>
-      <input type="text" @change="handleChange"  v-model="result" df-number  />
+      <input type="text" @change="handleChange"  v-model="result"  />
       
     </div>
 </template>

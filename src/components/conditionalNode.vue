@@ -2,13 +2,14 @@
     <div  ref="root">
         <div>Conditional node</div>
         <div style="margin-bottom:10px;">
-            <select v-model="logicOperator">
+            <select @change="handleOptionChange" v-model="logicOperator">
             <option value="Greater than">Greater than</option>
             <option value="Lesser than">Lesser than</option>
             <option value="Equal than">Equal than</option>
         </select>
         </div>
-        <button @click="handleClickEnter">Enter code block</button>
+        <button @click="handleClickMain">Enter main code block</button>
+        <button @click="handleClickElse">Enter else code block</button>
         <div>{{conditionMet}}</div>
         
     </div>
@@ -35,16 +36,33 @@ export default defineComponent({
            await nextTick()
             nodeId.value = root.value.parentElement.parentElement.id.slice(5)
             nodeData.value = df.getNodeFromId(nodeId.value)
-
-            if(df.drawflow.drawflow[`conditional-block-${nodeId.value}`] === undefined)
+            logicOperator.value = nodeData.value.data.logicOperator
+            if(df.drawflow.drawflow[`conditional-main-block-${nodeId.value}`] === undefined)
             {
-                df.addModule(`conditional-block-${nodeId.value}`)
+                df.addModule(`conditional-main-block-${nodeId.value}`)
             }
+            if(df.drawflow.drawflow[`conditional-else-block-${nodeId.value}`] === undefined)
+            {
+                df.addModule(`conditional-else-block-${nodeId.value}`)
+            }
+
+            
+
         })
 
-        function handleClickEnter()
+        function handleClickMain()
         {
-            df.changeModule(`conditional-block-${nodeId.value}`)
+            df.changeModule(`conditional-main-block-${nodeId.value}`)
+        }
+        function handleClickElse()
+        {
+            df.changeModule(`conditional-else-block-${nodeId.value}`)
+        }
+
+        function handleOptionChange()
+        {
+            nodeData.value.data.logicOperator = logicOperator.value
+            df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }
 
         emitter.on('execute-nodes', () => {
@@ -72,6 +90,7 @@ export default defineComponent({
             }
 
             nodeData.value.data.conditionMet = conditionMet.value
+            nodeData.value.data.logicOperator = logicOperator.value
 
             df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
 
@@ -84,9 +103,11 @@ export default defineComponent({
 
         return{
             root,
-            handleClickEnter,
+            handleClickMain,
             conditionMet,
-            logicOperator
+            logicOperator,
+            handleClickElse,
+            handleOptionChange
         }   
     },
 })

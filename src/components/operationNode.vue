@@ -47,12 +47,31 @@ import useEmitter from './useEmitter.js';
 
                     if(moduleName !== 'Home')
                     {
-                        const conditionalNode = df.getNodeFromId(moduleName.split('-')[2])
+                        const blockType = moduleName.split('-')[0]
 
-                        if(!conditionalNode.data.conditionMet)
+                        if(blockType === 'conditional')
                         {
-                            return;
+                            const conditionalFlow = moduleName.split('-')[1]
+                            const conditionalNode = df.getNodeFromId(moduleName.split('-')[3])
+                            let shouldExecute = true;
+
+                            if(conditionalFlow === 'main')
+                            {
+                                shouldExecute = conditionalNode.data.conditionMet
+                            }
+                            else
+                            {
+                                shouldExecute = !conditionalNode.data.conditionMet
+                            }
+
+                            if(!shouldExecute)
+                            {
+                                return;
+                            }
+
+                            
                         }
+                        
                     }
                     result.value = 0
                     nodeData.value = df.getNodeFromId(nodeId.value)
