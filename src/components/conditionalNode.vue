@@ -5,7 +5,7 @@
             <select v-model="logicOperator">
             <option value="Greater than">Greater than</option>
             <option value="Lesser than">Lesser than</option>
-            <option value="Equal">Equal than</option>
+            <option value="Equal than">Equal than</option>
         </select>
         </div>
         <button @click="handleClickEnter">Enter code block</button>

@@ -23,15 +23,18 @@ export default {
         const nodeData = ref({})
         const assignName = ref('')
         const assignValue = ref(0)
+        const internalInstance = getCurrentInstance()
 
         const emitter = useEmitter()
-        let df = getCurrentInstance().appContext.config.globalProperties.$df.value;
+        let df = internalInstance.appContext.config.globalProperties.$df.value;
+        const variables = internalInstance.appContext.config.globalProperties.$variables
 
         
         onMounted(async () => {
             await nextTick()
             nodeId.value = root.value.parentElement.parentElement.id.slice(5)
             nodeData.value = df.getNodeFromId(nodeId.value)
+            const moduleName = df.getModuleFromNodeId(nodeId.value)
             emitter.on('execute-nodes', () => {
                 nodeData.value = df.getNodeFromId(nodeId.value)
 
@@ -40,6 +43,12 @@ export default {
 
                
                 assignValue.value = connectedNode.data.result
+
+                variables[moduleName][assignName.value] = assignValue.value
+
+                console.log(variables)
+
+                
                 
             })
             

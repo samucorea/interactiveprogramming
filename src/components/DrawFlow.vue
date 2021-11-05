@@ -59,7 +59,7 @@ export default {
         const emitter = useEmitter()
         
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
-        
+        internalInstance.appContext.app._context.config.globalProperties.$variables = {'Home': {}}
         function addNodeToDrawFlow(name, pos_x, pos_y) {
 
 
