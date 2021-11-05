@@ -41,8 +41,19 @@ import useEmitter from './useEmitter.js';
                 nodeId.value = root.value.parentElement.parentElement.id.slice(5)
                 nodeData.value = df.getNodeFromId(nodeId.value)
                 result.value = nodeData.value.data.result
+                const moduleName = df.getModuleFromNodeId(nodeId.value)
 
                 emitter.on('execute-nodes', () => {
+
+                    if(moduleName !== 'Home')
+                    {
+                        const conditionalNode = df.getNodeFromId(moduleName.split('-')[2])
+
+                        if(!conditionalNode.data.conditionMet)
+                        {
+                            return;
+                        }
+                    }
                     result.value = 0
                     nodeData.value = df.getNodeFromId(nodeId.value)
 

@@ -36,7 +36,10 @@ export default defineComponent({
             nodeId.value = root.value.parentElement.parentElement.id.slice(5)
             nodeData.value = df.getNodeFromId(nodeId.value)
 
-            df.addModule(`conditional-block-${nodeId.value}`)
+            if(df.drawflow.drawflow[`conditional-block-${nodeId.value}`] === undefined)
+            {
+                df.addModule(`conditional-block-${nodeId.value}`)
+            }
         })
 
         function handleClickEnter()
@@ -67,6 +70,12 @@ export default defineComponent({
                     conditionMet.value = comparisonValues[0] === comparisonValues[1]
                 break;
             }
+
+            nodeData.value.data.conditionMet = conditionMet.value
+
+            df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
+
+           
 
 
 

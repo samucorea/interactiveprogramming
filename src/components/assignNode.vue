@@ -43,31 +43,7 @@ export default {
                 
             })
             
-        //     df.on('connectionCreated', function(connections){
-        //     const inputNode = df.getNodeFromId(connections.input_id)
-        //     const outputNode = df.getNodeFromId(connections.output_id)
-            
-        //     if(inputNode.name === 'assignNode')
-        //     {
-        //         if(outputNode.name === 'numberNode')
-        //         {
-        //             assignValue.value = outputNode.data.number 
-
-
-        //         }
-        //         else if(outputNode.name === 'operationNode')
-        //         {
-                    
-        //            emitter.on(`operation-node-changed-${outputNode.id}`, sum =>
-        //            {
-
-        //                assignValue.value = sum
-
-                    
-        //            })
-        //         }
-        //     }
-        // })
+        
             
         })
         return{

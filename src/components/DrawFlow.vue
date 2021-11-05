@@ -83,7 +83,6 @@ export default {
         }
 
         const createOperationNode = () => {
-            editor.value.changeModule('Home');
             addNodeToDrawFlow("operationNode",0,0)
         }
         const createAssignNode = () => {
