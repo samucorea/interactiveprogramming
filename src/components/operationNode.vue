@@ -17,6 +17,7 @@
 <script>
 import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
 import useEmitter from './useEmitter.js';
+import shouldExecuteInConditionalBlock from './shouldExecuteInConditionalBlock.js';
     export default{
         props:{
             execute: Boolean
@@ -46,29 +47,20 @@ import useEmitter from './useEmitter.js';
                 nodeData.value = df.getNodeFromId(nodeId.value)
                 result.value = nodeData.value.data.result
                 const moduleName = df.getModuleFromNodeId(nodeId.value)
+                const moduleNameParts = moduleName.split('-')
 
                 emitter.on('execute-nodes', () => {
 
                     if(moduleName !== 'Home')
                     {
-                        const blockType = moduleName.split('-')[0]
+                        const blockType = moduleNameParts[0]
 
                         if(blockType === 'conditional')
                         {
-                            const conditionalFlow = moduleName.split('-')[1]
-                            const conditionalNode = df.getNodeFromId(moduleName.split('-')[3])
-                            let shouldExecute = true;
+                            const conditionalFlow = moduleNameParts[1]
+                            const conditionalNode = df.getNodeFromId(moduleNameParts[3])
 
-                            if(conditionalFlow === 'main')
-                            {
-                                shouldExecute = conditionalNode.data.conditionMet
-                            }
-                            else
-                            {
-                                shouldExecute = !conditionalNode.data.conditionMet
-                            }
-
-                            if(!shouldExecute)
+                            if(!shouldExecuteInConditionalBlock(conditionalFlow,conditionalNode))
                             {
                                 return;
                             }
@@ -88,7 +80,6 @@ import useEmitter from './useEmitter.js';
                         const connection = input.connections[0]
                         const currentNode = df.getNodeFromId(connection.node)
 
-                        console.log(currentNode)
                         numbersInOperation.push(currentNode.data.result)
                     })
                       switch(binaryOp.value)

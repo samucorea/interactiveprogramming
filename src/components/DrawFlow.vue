@@ -5,6 +5,9 @@
     <button @click="createAssignNode">Create assign node</button>
     <button @click="createConditionalNode">Create conditional node</button>
     <button @click="createUseVariableNode">Create useVariable node</button>
+    <button @click="createPrintNode">Create Print node</button>
+    <button @click="createLoopNode">Create loop node</button>
+
     <button @click="returnHomeModule">Return to main code block</button>
     <button @click="executeNodes">Execute nodes</button>
     <button @click="exportNodes">Export</button>
@@ -21,6 +24,8 @@ import operationNode from './operationNode.vue'
 import assignNode from './assignNode.vue'
 import conditionalNode from './conditionalNode.vue'
 import useVariable from './useVariable.vue'
+import printNode from './printNode.vue'
+import loopNode from './loopNode.vue'
 
 import DrawFlow from 'drawflow'
 //eslint-disable-next-line
@@ -58,6 +63,16 @@ export default {
                 item:'useVariableNode',
                 input:0,
                 output:1
+            },
+            {
+                item:'printNode',
+                input:1,
+                output:0
+            },
+            {
+                item:'loopNode',
+                input:0,
+                output:0
             }
         ])
         const editor = shallowRef({})
@@ -114,6 +129,15 @@ export default {
             addNodeToDrawFlow('useVariableNode',0,0)
         }
 
+        function createPrintNode()
+        {
+            addNodeToDrawFlow('printNode',0,0)
+        }
+        function createLoopNode()
+        {
+            addNodeToDrawFlow('loopNode',0,0)
+        }
+
         function exportNodes()
         {
             console.log(editor.value.export())
@@ -135,6 +159,8 @@ export default {
             editor.value.registerNode("assignNode",assignNode,{},{})
             editor.value.registerNode("conditionalNode", conditionalNode,{},{})
             editor.value.registerNode("useVariableNode", useVariable,{},{})
+            editor.value.registerNode("printNode", printNode,{},{})
+            editor.value.registerNode("loopNode",loopNode,{},{})
 
         
             editor.value.on("connectionCreated", function(info) {
@@ -159,7 +185,9 @@ export default {
             returnHomeModule,
             executeNodes,
             exportNodes,
-            createUseVariableNode
+            createUseVariableNode,
+            createPrintNode,
+            createLoopNode
         }
     }
 }
