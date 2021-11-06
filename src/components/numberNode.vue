@@ -1,9 +1,7 @@
 <template>
     <div ref="root">
-      <select v-model="option" style="margin-bottom:10px;">
-          <option id="Number">Number</option>
-          <option id="useVariable">Use variable</option>
-      </select>
+      <div>Node {{nodeId}}</div>
+      <div>Number</div>
       <input type="text" @change="handleChange"  v-model="result"  />
       
     </div>
@@ -13,7 +11,7 @@
 <script>
     import { ref } from "@vue/reactivity"
 import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
-import useEmitter from "./useEmitter";
+
 
 
 
@@ -23,15 +21,12 @@ import useEmitter from "./useEmitter";
         setup() {
             const root = ref(null);
             const nodeId = ref(0)
-            const option = ref('Number')
-            const emitter = useEmitter()
             const result = ref(0)
             const nodeData = ref({})
         
             
             let df = getCurrentInstance().appContext.config.globalProperties.$df.value;
             
-            const variables = getCurrentInstance().appContext.config.globalProperties.$variables
            
            onMounted( async () => {
                await nextTick()
@@ -39,24 +34,7 @@ import useEmitter from "./useEmitter";
                nodeId.value = root.value.parentElement.parentElement.id.slice(5)
                nodeData.value = df.getNodeFromId(nodeId.value)
                result.value = nodeData.value.data.result
-               const moduleName = df.getModuleFromNodeId(nodeId.value)
 
-               emitter.on('execute-nodes', () => {
-                   if (option.value === 'Use variable')
-                   {
-                       console.log(variables)
-                       if(variables[moduleName][result.value] !== undefined)
-                       {
-                           result.value = variables[moduleName][result.value]
-                           handleChange()
-                       }
-                       else
-                       {
-                           result.value = NaN
-                           handleChange()
-                       }
-                   }
-               })
 
               
                
@@ -65,6 +43,7 @@ import useEmitter from "./useEmitter";
 
            const handleChange = () => {
                nodeData.value.data.result = parseInt(result.value)
+               nodeData.value.data.pythonCode = `${result.value}`
                
                
                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
@@ -76,7 +55,7 @@ import useEmitter from "./useEmitter";
                 result,
                 root,
                 handleChange,
-                option
+                nodeId
             }
            
         }
@@ -84,7 +63,5 @@ import useEmitter from "./useEmitter";
 </script>
 
 <style scoped>
-input{
-    width:3.5rem;
-}
+
 </style>

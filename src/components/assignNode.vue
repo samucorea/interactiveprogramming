@@ -1,5 +1,6 @@
 <template>
     <div ref="root">
+        <div>Node {{nodeId}}</div>
         <div style="margin-bottom:10px;">Assign</div>
         <div style="margin-bottom:10px;">
            <input df-name v-model="assignName"  placeholder="variable name..." type="text">
@@ -35,6 +36,9 @@ export default {
             nodeId.value = root.value.parentElement.parentElement.id.slice(5)
             nodeData.value = df.getNodeFromId(nodeId.value)
             const moduleName = df.getModuleFromNodeId(nodeId.value)
+
+            assignName.value = nodeData.value.data.variableName
+            assignValue.value = nodeData.value.data.variableValue
             emitter.on('execute-nodes', () => {
                 nodeData.value = df.getNodeFromId(nodeId.value)
 
@@ -46,7 +50,17 @@ export default {
 
                 variables[moduleName][assignName.value] = assignValue.value
 
-                console.log(variables)
+                let pythonCode = `${assignName.value} = ${assignValue.value}`
+                console.log(pythonCode)
+
+                nodeData.value.data.pythonCode = pythonCode
+                nodeData.value.data.variableName = assignName.value
+                nodeData.value.data.variableValue = assignValue.value
+
+                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
+                
+
+
 
                 
                 
@@ -58,7 +72,8 @@ export default {
         return{
             assignName,
             assignValue,
-            root
+            root,
+            nodeId
         }
      
 

@@ -4,8 +4,10 @@
     <button @click="createOperationNode">Create operation node</button>
     <button @click="createAssignNode">Create assign node</button>
     <button @click="createConditionalNode">Create conditional node</button>
+    <button @click="createUseVariableNode">Create useVariable node</button>
     <button @click="returnHomeModule">Return to main code block</button>
     <button @click="executeNodes">Execute nodes</button>
+    <button @click="exportNodes">Export</button>
     
  
     
@@ -18,6 +20,7 @@ import numberNode from './numberNode.vue'
 import operationNode from './operationNode.vue'
 import assignNode from './assignNode.vue'
 import conditionalNode from './conditionalNode.vue'
+import useVariable from './useVariable.vue'
 
 import DrawFlow from 'drawflow'
 //eslint-disable-next-line
@@ -38,7 +41,7 @@ export default {
          
             {
                 item:'operationNode',
-                input:1,
+                input:2,
                 output:1
             },
             {
@@ -50,6 +53,11 @@ export default {
                 item:'conditionalNode',
                 input:2,
                 output:0
+            },
+            {
+                item:'useVariableNode',
+                input:0,
+                output:1
             }
         ])
         const editor = shallowRef({})
@@ -101,6 +109,16 @@ export default {
             editor.value.changeModule('Home')
         }
 
+        function createUseVariableNode()
+        {
+            addNodeToDrawFlow('useVariableNode',0,0)
+        }
+
+        function exportNodes()
+        {
+            console.log(editor.value.export())
+        }
+
   
         onMounted(() => {
           
@@ -116,6 +134,7 @@ export default {
             editor.value.registerNode("operationNode",operationNode,{},{})
             editor.value.registerNode("assignNode",assignNode,{},{})
             editor.value.registerNode("conditionalNode", conditionalNode,{},{})
+            editor.value.registerNode("useVariableNode", useVariable,{},{})
 
         
             editor.value.on("connectionCreated", function(info) {
@@ -138,7 +157,9 @@ export default {
             createAssignNode,
             createConditionalNode,
             returnHomeModule,
-            executeNodes
+            executeNodes,
+            exportNodes,
+            createUseVariableNode
         }
     }
 }
@@ -152,7 +173,7 @@ export default {
     #drawflow{
         border:1px solid black;
         width:100%;
-        height:60vh;
+        height:90vh;
         text-align: initial;
     }
 </style>

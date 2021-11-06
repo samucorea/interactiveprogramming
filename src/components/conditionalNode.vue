@@ -1,5 +1,6 @@
 <template>
     <div  ref="root">
+        <div>Node {{nodeId}}</div>
         <div>Conditional node</div>
         <div style="margin-bottom:10px;">
             <select @change="handleOptionChange" v-model="logicOperator">
@@ -72,6 +73,11 @@ export default defineComponent({
             Object.keys(nodeData.value.inputs).forEach(key => {
                 const nodeConnectedId = nodeData.value.inputs[key].connections[0].node
                 const nodeConnected = df.getNodeFromId(nodeConnectedId)
+
+                if(nodeConnected.name==='useVariableNode')
+                {
+                    console.log(nodeConnected.data.variableName)
+                }
                 comparisonValues.push(nodeConnected.data.result)
 
             })
@@ -88,7 +94,7 @@ export default defineComponent({
                     conditionMet.value = comparisonValues[0] === comparisonValues[1]
                 break;
             }
-
+            console.log(`${comparisonValues[0]} > ${comparisonValues[1]}`)
             nodeData.value.data.conditionMet = conditionMet.value
             nodeData.value.data.logicOperator = logicOperator.value
 
@@ -107,7 +113,8 @@ export default defineComponent({
             conditionMet,
             logicOperator,
             handleClickElse,
-            handleOptionChange
+            handleOptionChange,
+            nodeId
         }   
     },
 })
