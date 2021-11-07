@@ -17,7 +17,9 @@
 </template>
 
 <script>
-import { defineComponent, nextTick, onMounted,ref,getCurrentInstance} from 'vue'
+import { defineComponent, nextTick, onMounted,ref,getCurrentInstance, readonly} from 'vue'
+import handleModule from './handleModule.js';
+import setExecProcedure from './setExecProcedure.js';
 import useEmitter from './useEmitter.js';
 
 
@@ -25,6 +27,11 @@ export default defineComponent({
     setup() {
        
         const root = ref(null);
+        const logicDict = readonly({
+            'Greater than' : '>',
+            'Lesser than' : '<',
+            'Equal than' : '=='
+        })
         const nodeId = ref(0);
         const nodeData = ref({})
         const conditionMet = ref(null)
@@ -47,6 +54,8 @@ export default defineComponent({
                 df.addModule(`conditional-else-block-${nodeId.value}`)
             }
 
+            setExecProcedure(emitter,executeNode,df,nodeId)
+
             
 
         })
@@ -66,9 +75,16 @@ export default defineComponent({
             df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }
 
-        emitter.on('execute-nodes', () => {
+        function executeNode()
+        {
+            const moduleName = df.getModuleFromNodeId(nodeId.value)
+            if(!handleModule(moduleName,df))
+            {
+                return;
+            }
             nodeData.value = df.getNodeFromId(nodeId.value)
             const comparisonValues = []
+            const comparisonItemExpressions = []
 
             Object.keys(nodeData.value.inputs).forEach(key => {
                 const nodeConnectedId = nodeData.value.inputs[key].connections[0].node
@@ -76,8 +92,9 @@ export default defineComponent({
 
                 if(nodeConnected.name==='useVariableNode')
                 {
-                    console.log(nodeConnected.data.variableName)
+                    console.log(nodeConnected.data.pythonCode)
                 }
+                comparisonItemExpressions.push(nodeConnected.data.pythonCode)
                 comparisonValues.push(nodeConnected.data.result)
 
             })
@@ -94,11 +111,15 @@ export default defineComponent({
                     conditionMet.value = comparisonValues[0] === comparisonValues[1]
                 break;
             }
-            console.log(`${comparisonValues[0]} > ${comparisonValues[1]}`)
+            console.log(`${comparisonItemExpressions[0]} > ${comparisonItemExpressions[1]}`)
             nodeData.value.data.conditionMet = conditionMet.value
             nodeData.value.data.logicOperator = logicOperator.value
+            nodeData.value.data.pythonCode = `if ${comparisonItemExpressions[0]} ${logicDict[logicOperator.value]} ${comparisonItemExpressions[1]}:`
 
             df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
+        }
+        emitter.on('execute-nodes', () => {
+            
 
            
 

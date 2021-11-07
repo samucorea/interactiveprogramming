@@ -17,7 +17,8 @@
 <script>
 import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
 import useEmitter from './useEmitter.js';
-import shouldExecuteInConditionalBlock from './shouldExecuteInConditionalBlock.js';
+import handleModule from './handleModule.js';
+import setExecProcedure from './setExecProcedure.js';
     export default{
         props:{
             execute: Boolean
@@ -46,32 +47,27 @@ import shouldExecuteInConditionalBlock from './shouldExecuteInConditionalBlock.j
                 nodeId.value = root.value.parentElement.parentElement.id.slice(5)
                 nodeData.value = df.getNodeFromId(nodeId.value)
                 result.value = nodeData.value.data.result
+              
+                
+
+                setExecProcedure(emitter,executeNode,df,nodeId)
+               
+                    
+                    
+                })
+
+            function executeNode()
+            {
                 const moduleName = df.getModuleFromNodeId(nodeId.value)
-                const moduleNameParts = moduleName.split('-')
-
-                emitter.on('execute-nodes', () => {
-
-                    if(moduleName !== 'Home')
-                    {
-                        const blockType = moduleNameParts[0]
-
-                        if(blockType === 'conditional')
-                        {
-                            const conditionalFlow = moduleNameParts[1]
-                            const conditionalNode = df.getNodeFromId(moduleNameParts[3])
-
-                            if(!shouldExecuteInConditionalBlock(conditionalFlow,conditionalNode))
-                            {
-                                return;
-                            }
-
-                            
-                        }
-                        
-                    }
+            
+                    if(!handleModule(moduleName,df))
+                {
+                    return;
+                }
                     result.value = 0
                     nodeData.value = df.getNodeFromId(nodeId.value)
                     const numbersInOperation = []
+                    const expressionsInOperation = []
                     const inputs = nodeData.value.inputs
                 
                     
@@ -81,6 +77,7 @@ import shouldExecuteInConditionalBlock from './shouldExecuteInConditionalBlock.j
                         const currentNode = df.getNodeFromId(connection.node)
 
                         numbersInOperation.push(currentNode.data.result)
+                        expressionsInOperation.push(currentNode.data.pythonCode)
                     })
                       switch(binaryOp.value)
                         {
@@ -99,14 +96,11 @@ import shouldExecuteInConditionalBlock from './shouldExecuteInConditionalBlock.j
                             break;
 
                         }
-                        console.log(`${numbersInOperation[0]} + ${numbersInOperation[1]}`)
+                        
                         nodeData.value.data.result = result.value
-                        nodeData.value.data.pythonCode = binaryOp.value
+                        nodeData.value.data.pythonCode = `${expressionsInOperation[0]} ${binaryOp.value} ${expressionsInOperation[1]}`
                         df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
-                    })
-                    
-                    
-                })
+            }
                 
             
 

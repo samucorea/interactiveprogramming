@@ -20,7 +20,7 @@ export default defineComponent({
             await nextTick()
             nodeId.value = root.value.parentElement.parentElement.id.slice(5)
             // nodeData.value = df.getNodeFromId(nodeId.value)
-
+    
             emitter.on('execute-nodes', () => {
                 nodeData.value = df.getNodeFromId(nodeId.value)
                 const connection = nodeData.value.inputs.input_1.connections[0]

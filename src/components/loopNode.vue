@@ -53,11 +53,6 @@ export default defineComponent({
                 nodeData.value.data.to = parseInt(to.value)
 
                 df.updateNodeDataFromId(nodeData.value.data)
-
-                for (let i = from.value; i < to.value; i++) {
-                    emitter.emit(`loop-${nodeId.value}-execute`)
-                    
-                }
             })
 
 
