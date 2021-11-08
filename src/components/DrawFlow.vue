@@ -1,16 +1,49 @@
 <template>
-    <div id="drawflow"></div>
-    <button @click="createNumberNode">Create number node</button>
-    <button @click="createOperationNode">Create operation node</button>
-    <button @click="createAssignNode">Create assign node</button>
-    <button @click="createConditionalNode">Create conditional node</button>
-    <button @click="createUseVariableNode">Create useVariable node</button>
-    <button @click="createPrintNode">Create Print node</button>
-    <button @click="createLoopNode">Create loop node</button>
+    <el-container>
+        <el-header class="header">
+         
+        <h1>Interactive programming</h1>
+        
+        
+        </el-header>
+        <el-container class="container">
+            <el-aside width="250px" class="column">
+                    <ul>
+                        <li
+                            v-for="n in listNodes"
+                            :key="n"
+                            draggable="true"
+                            :data-node="n.item"
+                            @dragstart="drag($event)"
+                        >
+                            <div class="node" :style="`background: lightblue;`">
+                            {{ n.item }}
+                            </div>
+                        </li>
+                        </ul>
+                          
+            </el-aside>
+            <el-main class="main" style="overflow:hidden;">
+                <div 
+                id="drawflow"
+                @drop="drop($event)"
+                @dragover="allowDrop($event)"></div>
+            </el-main>
+           
+           
+         
+           
+  
+        </el-container>
 
-    <button @click="returnHomeModule">Return to main code block</button>
-    <button @click="executeNodes">Execute nodes</button>
-    <button @click="exportNodes">Export</button>
+         <el-footer>
+              <el-button @click="executeNodes">Execute nodes</el-button>
+              <el-button @click="exportNodes">Export nodes</el-button>
+            </el-footer>
+    </el-container>
+   
+
+    
     
  
     
@@ -84,7 +117,21 @@ export default {
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
         internalInstance.appContext.app._context.config.globalProperties.$variables = {'Home': {}}
         function addNodeToDrawFlow(name, pos_x, pos_y) {
-
+            
+             pos_x =
+                pos_x *
+                (editor.value.precanvas.clientWidth /
+                    (editor.value.precanvas.clientWidth * editor.value.zoom)) -
+                editor.value.precanvas.getBoundingClientRect().x *
+                (editor.value.precanvas.clientWidth /
+                    (editor.value.precanvas.clientWidth * editor.value.zoom));
+            pos_y =
+                pos_y *
+                (editor.value.precanvas.clientHeight /
+                    (editor.value.precanvas.clientHeight * editor.value.zoom)) -
+                editor.value.precanvas.getBoundingClientRect().y *
+                (editor.value.precanvas.clientHeight /
+                    (editor.value.precanvas.clientHeight * editor.value.zoom));
 
             const nodeSelected = listNodes.find((ele) => ele.item == name);
             editor.value.addNode(
@@ -105,15 +152,24 @@ export default {
             
         }
 
-        const createOperationNode = () => {
-            addNodeToDrawFlow("operationNode",0,0)
+        function drag(ev)
+        {
+            ev.dataTransfer.setData("node", ev.target.getAttribute("data-node"));
         }
-        const createAssignNode = () => {
-            addNodeToDrawFlow("assignNode",0,0)
+
+        function drop(ev)
+        {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("node");
+            addNodeToDrawFlow(data, ev.clientX, ev.clientY);
         }
-        const createConditionalNode = () => {
-            addNodeToDrawFlow("conditionalNode",0,0)
+
+        function allowDrop(ev)
+        {
+            ev.preventDefault()
         }
+
+    
 
         function executeNodes() {
             emitter.emit('execute-nodes')
@@ -124,19 +180,7 @@ export default {
             editor.value.changeModule('Home')
         }
 
-        function createUseVariableNode()
-        {
-            addNodeToDrawFlow('useVariableNode',0,0)
-        }
-
-        function createPrintNode()
-        {
-            addNodeToDrawFlow('printNode',0,0)
-        }
-        function createLoopNode()
-        {
-            addNodeToDrawFlow('loopNode',0,0)
-        }
+    
 
         function exportNodes()
         {
@@ -178,30 +222,50 @@ export default {
         })
 
         return {
+            listNodes,
+            drag,
+            drop,
+            allowDrop,
             createNumberNode,
-            createOperationNode,
-            createAssignNode,
-            createConditionalNode,
             returnHomeModule,
             executeNodes,
             exportNodes,
-            createUseVariableNode,
-            createPrintNode,
-            createLoopNode
+         
         }
     }
 }
 </script>
 
 <style>
+    html{
+        overflow:hidden;
+    }
     body{
-        height:100vh;
+        overflow:hidden;
+    }
+  
+
+    ul{
+        list-style: none;
+    }
+
+    .container{
+        min-height:calc(90vh - 100px);
+    }
+    .main{
+        overflow:hidden;
     }
    
     #drawflow{
         border:1px solid black;
+        height:100%;
         width:100%;
-        height:90vh;
         text-align: initial;
+        overflow:hidden;
+    }
+
+    .node{
+        padding:1rem;
+        margin:1rem;
     }
 </style>

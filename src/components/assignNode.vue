@@ -3,7 +3,7 @@
         <div>Node {{nodeId}}</div>
         <div style="margin-bottom:10px;">Assign</div>
         <div style="margin-bottom:10px;">
-           <input df-name v-model="assignName"  placeholder="variable name..." type="text">
+           <el-input df-name v-model="assignName"  placeholder="variable name..." type="text" />
         </div>
         <div >
             {{assignValue   }}
@@ -41,8 +41,8 @@ export default {
           
 
 
-            assignName.value = nodeData.value.data.variableName
-            assignValue.value = nodeData.value.data.variableValue
+            assignName.value = nodeData.value.data.name
+            assignValue.value = nodeData.value.data.value
 
             setExecProcedure(emitter,executeNode,df,nodeId)
         
@@ -84,7 +84,8 @@ export default {
                 variables[moduleName][assignName.value] = assignValue.value
 
          
-
+                nodeData.value.data.name = assignName.value
+                nodeData.value.data.value = assignValue.value
                 nodeData.value.data.pythonCode = `${assignName.value} = ${connectedNode.data.pythonCode}`
            
 

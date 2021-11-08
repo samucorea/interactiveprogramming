@@ -3,12 +3,12 @@
         <div>Node {{nodeId}}</div>
         <div>Operation node</div>
         <div style="margin-bottom:10px;">
-            <select v-model="binaryOp">
-            <option value="+">+</option>
-            <option value="-">-</option>
-            <option value="*">*</option>
-            <option value="/">/</option>
-        </select>
+            <el-select size="small" v-model="binaryOp">
+            <el-option value="+">Sum</el-option>
+            <el-option value="-">Substract</el-option>
+            <el-option value="*">Multiply</el-option>
+            <el-option value="/">Divide</el-option>
+        </el-select>
         </div>
         <span>{{result}}</span>
     </div>
@@ -20,10 +20,7 @@ import useEmitter from './useEmitter.js';
 import handleModule from './handleModule.js';
 import setExecProcedure from './setExecProcedure.js';
     export default{
-        props:{
-            execute: Boolean
-        },
-        //eslint-disable-next-line
+
         setup()
         {
             const emitter = useEmitter()
@@ -98,6 +95,7 @@ import setExecProcedure from './setExecProcedure.js';
                         }
                         
                         nodeData.value.data.result = result.value
+                        nodeData.value.data.terms = [expressionsInOperation[0],binaryOp.value,expressionsInOperation[1]]
                         nodeData.value.data.pythonCode = `${expressionsInOperation[0]} ${binaryOp.value} ${expressionsInOperation[1]}`
                         df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
             }

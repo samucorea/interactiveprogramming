@@ -2,7 +2,7 @@
     <div ref="root">
         <div>Node {{nodeId}}</div>
         <div>Variable</div>
-        <input  v-model="variableName" type="text">
+        <el-input size="small"  v-model="variableName" type="text" />
         <div>
             {{variableValue}}
         </div>
@@ -35,7 +35,7 @@ export default defineComponent({
 
            
 
-            variableName.value = nodeData.value.data.variableName
+            variableName.value = nodeData.value.data.name
             variableValue.value = nodeData.value.data.result
 
             setExecProcedure(emitter,executeNode,df,nodeId)
@@ -53,7 +53,7 @@ export default defineComponent({
                     return;
                 }
               let value = variables[moduleName][variableName.value]
-                nodeData.value.data.pythonCode = variableName.value
+                
                 if(value !== undefined)
                 {
                     variableValue.value = value
@@ -62,7 +62,8 @@ export default defineComponent({
 
                     
                 }
-
+                nodeData.value.data.pythonCode = variableName.value
+                nodeData.value.data.name = variableName.value
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }
        

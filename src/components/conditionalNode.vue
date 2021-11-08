@@ -111,22 +111,12 @@ export default defineComponent({
                     conditionMet.value = comparisonValues[0] === comparisonValues[1]
                 break;
             }
-            console.log(`${comparisonItemExpressions[0]} > ${comparisonItemExpressions[1]}`)
-            nodeData.value.data.conditionMet = conditionMet.value
-            nodeData.value.data.logicOperator = logicOperator.value
+            
+            nodeData.value.data.terms = [comparisonItemExpressions[0],logicDict[logicOperator.value],comparisonItemExpressions[1]]
             nodeData.value.data.pythonCode = `if ${comparisonItemExpressions[0]} ${logicDict[logicOperator.value]} ${comparisonItemExpressions[1]}:`
 
             df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }
-        emitter.on('execute-nodes', () => {
-            
-
-           
-
-
-
-            
-        })
 
         return{
             root,

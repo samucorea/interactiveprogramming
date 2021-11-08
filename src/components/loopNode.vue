@@ -4,10 +4,10 @@
             Node {{nodeId}}
         </div>
         <div>
-            From: <input v-model="from" type="text">
+            From: <input df-from v-model="from" type="text">
         </div>
         <div>
-            To: <input v-model="to" type="text">
+            To: <input df-to v-model="to" type="text">
         </div>
         <button @click="handleClick">Enter loop code block</button>
     </div>
@@ -51,8 +51,9 @@ export default defineComponent({
 
                 nodeData.value.data.from = parseInt(from.value)
                 nodeData.value.data.to = parseInt(to.value)
+                nodeData.value.data.pythonCode = `for i in range(${from.value},${to.value}):`
 
-                df.updateNodeDataFromId(nodeData.value.data)
+                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
             })
 
 
