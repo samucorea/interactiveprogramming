@@ -114,6 +114,7 @@ export default defineComponent({
             
             nodeData.value.data.terms = [comparisonItemExpressions[0],logicDict[logicOperator.value],comparisonItemExpressions[1]]
             nodeData.value.data.pythonCode = `if ${comparisonItemExpressions[0]} ${logicDict[logicOperator.value]} ${comparisonItemExpressions[1]}:`
+            nodeData.value.data.conditionMet = conditionMet.value
 
             df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }

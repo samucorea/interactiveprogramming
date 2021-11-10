@@ -57,6 +57,7 @@ export default {
 
         function executeNode()
         {
+            
             if(!isNaN(assignName.value))
             {
                 alert(`Variable name can't be a number at Node ${nodeId.value}`)
@@ -69,6 +70,7 @@ export default {
                  return;
              }
 
+           
             nodeData.value = df.getNodeFromId(nodeId.value)
             const connectedNode = df.getNodeFromId(nodeData.value.inputs.input_1.connections[0].node)
             const scopeVariables = variables[moduleName]

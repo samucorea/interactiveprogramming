@@ -7,20 +7,29 @@
         
         </el-header>
         <el-container class="container">
-            <el-aside width="250px" class="column">
+          
+            <el-aside width="400px" >
+                <div class="tools">
+
+                    <ul class="program-list">
+                        <li>Program 1</li>
+                        <li>Program 2</li>
+                    </ul>
                     <ul>
-                        <li
-                            v-for="n in listNodes"
-                            :key="n"
-                            draggable="true"
-                            :data-node="n.item"
-                            @dragstart="drag($event)"
-                        >
-                            <div class="node" :style="`background: lightblue;`">
-                            {{ n.item }}
-                            </div>
-                        </li>
-                        </ul>
+                            <li
+                                v-for="n in listNodes"
+                                :key="n"
+                                draggable="true"
+                                :data-node="n.item"
+                                @dragstart="drag($event)"
+                            >
+                                <div class="node" :style="`background: lightblue;`">
+                                {{ n.item }}
+                                </div>
+                            </li>
+                    </ul>
+                </div>
+                   
                           
             </el-aside>
             <el-main class="main" style="overflow:hidden;">
@@ -28,7 +37,10 @@
                 id="drawflow"
                 @drop="drop($event)"
                 @dragover="allowDrop($event)"></div>
+                
             </el-main>
+
+      
            
            
          
@@ -39,8 +51,34 @@
          <el-footer>
               <el-button @click="executeNodes">Execute nodes</el-button>
               <el-button @click="exportNodes">Export nodes</el-button>
-            </el-footer>
+              <el-button @click="returnHomeModule">Return main block</el-button>
+        </el-footer>
+
+              <el-container>
+                <el-header>
+                    Python program
+                </el-header>
+                <el-main>
+                    <div>
+                    Execute program
+                    <p>
+                        # This program adds two numbers
+
+                        num1 = 1.5
+                        num2 = 6.3
+
+                        # Add two numbers
+                        sum = num1 + num2
+
+                        # Display the sum
+                        print('The sum of {0} and {1} is {2}'.format(num1, num2, sum))
+                    </p>
+                </div>
+                </el-main>
+            </el-container>
     </el-container>
+
+  
    
 
     
@@ -215,6 +253,10 @@ export default {
             }
             });
 
+            editor.value.import({"drawflow":{"Home":{"data":{"1":{"id":1,"name":"numberNode","data":{"result":3,"pythonCode":"3"},"class":"numberNode","html":"numberNode","typenode":"vue","inputs":{},"outputs":{"output_1":{"connections":[{"node":"3","output":"input_1"}]}},"pos_x":301.20001220703125,"pos_y":169.1999969482422},"2":{"id":2,"name":"numberNode","data":{"result":4,"pythonCode":"4"},"class":"numberNode","html":"numberNode","typenode":"vue","inputs":{},"outputs":{"output_1":{"connections":[{"node":"3","output":"input_2"}]}},"pos_x":256.20001220703125,"pos_y":383.1999969482422},"3":{"id":3,"name":"operationNode","data":{"result":7,"terms":["3","+","4"],"pythonCode":"3 + 4"},"class":"operationNode","html":"operationNode","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"1","input":"output_1"}]},"input_2":{"connections":[{"node":"2","input":"output_1"}]}},"outputs":{"output_1":{"connections":[]}},"pos_x":637.2000122070312,"pos_y":301.1999969482422}}}}})
+
+            
+
             
             
 
@@ -237,16 +279,24 @@ export default {
 </script>
 
 <style>
-    html{
+    /* html{
         overflow:hidden;
     }
     body{
         overflow:hidden;
-    }
+    } */
   
 
     ul{
         list-style: none;
+    }
+
+    .tools{
+        display:flex;
+    }
+
+    ul.program-list > li {
+        cursor:pointer;
     }
 
     .container{
@@ -265,7 +315,7 @@ export default {
     }
 
     .node{
-        padding:1rem;
+        padding:2rem;
         margin:1rem;
     }
 </style>

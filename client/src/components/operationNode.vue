@@ -32,11 +32,6 @@ import setExecProcedure from './setExecProcedure.js';
 
             let result = ref(0)
             let df = getCurrentInstance().appContext.config.globalProperties.$df.value
-
-            
-          
-
-           
         
             onMounted(async () => {
                 await nextTick()
