@@ -17,7 +17,7 @@
 <script>
 import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
 import useEmitter from './useEmitter.js';
-import handleModule from './handleModule.js';
+// import handleModule from './handleModule.js';
 import setExecProcedure from './setExecProcedure.js';
     export default{
 
@@ -50,12 +50,12 @@ import setExecProcedure from './setExecProcedure.js';
 
             function executeNode()
             {
-                const moduleName = df.getModuleFromNodeId(nodeId.value)
+                // const moduleName = df.getModuleFromNodeId(nodeId.value)
             
-                    if(!handleModule(moduleName,df))
-                {
-                    return;
-                }
+                //     if(!handleModule(moduleName,df))
+                // {
+                //     return;
+                // }
                     result.value = 0
                     nodeData.value = df.getNodeFromId(nodeId.value)
                     const numbersInOperation = []
@@ -91,7 +91,7 @@ import setExecProcedure from './setExecProcedure.js';
                         
                         nodeData.value.data.result = result.value
                         nodeData.value.data.terms = [expressionsInOperation[0],binaryOp.value,expressionsInOperation[1]]
-                        nodeData.value.data.pythonCode = `${expressionsInOperation[0]} ${binaryOp.value} ${expressionsInOperation[1]}`
+                        nodeData.value.data.pythonCode = `${expressionsInOperation[0]} ${binaryOp.value} ${expressionsInOperation[1]}\n`
                         df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
             }
                 

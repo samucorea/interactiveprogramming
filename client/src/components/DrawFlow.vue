@@ -97,6 +97,7 @@ import conditionalNode from './conditionalNode.vue'
 import useVariable from './useVariable.vue'
 import printNode from './printNode.vue'
 import loopNode from './loopNode.vue'
+import getPythonCode from './getPythonCode.js'
 
 import DrawFlow from 'drawflow'
 //eslint-disable-next-line
@@ -222,7 +223,9 @@ export default {
 
         function exportNodes()
         {
-            console.log(editor.value.export())
+        
+            const df = editor.value.export()
+            getPythonCode(df.drawflow,'Home')
         }
 
   
@@ -253,7 +256,6 @@ export default {
             }
             });
 
-            editor.value.import({"drawflow":{"Home":{"data":{"1":{"id":1,"name":"numberNode","data":{"result":3,"pythonCode":"3"},"class":"numberNode","html":"numberNode","typenode":"vue","inputs":{},"outputs":{"output_1":{"connections":[{"node":"3","output":"input_1"}]}},"pos_x":301.20001220703125,"pos_y":169.1999969482422},"2":{"id":2,"name":"numberNode","data":{"result":4,"pythonCode":"4"},"class":"numberNode","html":"numberNode","typenode":"vue","inputs":{},"outputs":{"output_1":{"connections":[{"node":"3","output":"input_2"}]}},"pos_x":256.20001220703125,"pos_y":383.1999969482422},"3":{"id":3,"name":"operationNode","data":{"result":7,"terms":["3","+","4"],"pythonCode":"3 + 4"},"class":"operationNode","html":"operationNode","typenode":"vue","inputs":{"input_1":{"connections":[{"node":"1","input":"output_1"}]},"input_2":{"connections":[{"node":"2","input":"output_1"}]}},"outputs":{"output_1":{"connections":[]}},"pos_x":637.2000122070312,"pos_y":301.1999969482422}}}}})
 
             
 

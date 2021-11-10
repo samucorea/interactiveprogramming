@@ -18,7 +18,7 @@
 
 <script>
 import { defineComponent, nextTick, onMounted,ref,getCurrentInstance, readonly} from 'vue'
-import handleModule from './handleModule.js';
+// import handleModule from './handleModule.js';
 import setExecProcedure from './setExecProcedure.js';
 import useEmitter from './useEmitter.js';
 
@@ -77,11 +77,11 @@ export default defineComponent({
 
         function executeNode()
         {
-            const moduleName = df.getModuleFromNodeId(nodeId.value)
-            if(!handleModule(moduleName,df))
-            {
-                return;
-            }
+            // const moduleName = df.getModuleFromNodeId(nodeId.value)
+            // if(!handleModule(moduleName,df))
+            // {
+            //     return;
+            // }
             nodeData.value = df.getNodeFromId(nodeId.value)
             const comparisonValues = []
             const comparisonItemExpressions = []
@@ -113,7 +113,7 @@ export default defineComponent({
             }
             
             nodeData.value.data.terms = [comparisonItemExpressions[0],logicDict[logicOperator.value],comparisonItemExpressions[1]]
-            nodeData.value.data.pythonCode = `if ${comparisonItemExpressions[0]} ${logicDict[logicOperator.value]} ${comparisonItemExpressions[1]}:`
+            nodeData.value.data.pythonCode = `if ${comparisonItemExpressions[0]} ${logicDict[logicOperator.value]} ${comparisonItemExpressions[1]}:\n`
             nodeData.value.data.conditionMet = conditionMet.value
 
             df.updateNodeDataFromId(nodeId.value,nodeData.value.data)

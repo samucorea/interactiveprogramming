@@ -88,7 +88,7 @@ export default {
          
                 nodeData.value.data.name = assignName.value
                 nodeData.value.data.value = assignValue.value
-                nodeData.value.data.pythonCode = `${assignName.value} = ${connectedNode.data.pythonCode}`
+                nodeData.value.data.pythonCode = `${assignName.value} = ${connectedNode.data.pythonCode}\n`
            
 
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
