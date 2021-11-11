@@ -43,10 +43,10 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
         else if (element.name === 'conditionalNode') {
 
 
-            const mainBlockCode = getPythonCode(modules, `conditional-main-block-${element.id}`, '    ')
-            const elseBlockCode = getPythonCode(modules, `conditional-else-block-${element.id}`, '    ')
+            const mainBlockCode = getPythonCode(modules, `conditional-main-block-${element.id}`, prefix + '    ')
+            const elseBlockCode = getPythonCode(modules, `conditional-else-block-${element.id}`, prefix + '    ')
 
-            code = prefix + element.data.pythoncode + mainBlockCode + 'else:\n' + elseBlockCode + code
+            code = prefix + element.data.pythoncode + mainBlockCode + prefix + 'else:\n' + elseBlockCode + code
 
 
         }
@@ -56,9 +56,12 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
         }
 
         else if (element.name === 'loopNode') {
-            const loopBlock = getPythonCode(modules, `loop-${element.id}`, '    ')
+            const loopBlock = getPythonCode(modules, `loop-${element.id}`, prefix + '    ')
 
             code = prefix + element.data.pythoncode + loopBlock + code
+        }
+        else if (element.name === 'printNode') {
+            code = prefix + element.data.pythoncode
         }
 
 
@@ -66,7 +69,7 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
 
     }
 
-    console.log(code)
+
 
     return code
 

@@ -8,13 +8,10 @@
         </el-header>
         <el-container class="container">
           
-            <el-aside width="400px" >
+            <el-aside width="250px" >
                 <div class="tools">
 
-                    <ul class="program-list">
-                        <li>Program 1</li>
-                        <li>Program 2</li>
-                    </ul>
+                    
                     <ul>
                             <li
                                 v-for="n in listNodes"
@@ -32,6 +29,16 @@
                    
                           
             </el-aside>
+            <el-drawer 
+                v-model="savedDiagramsDrawer"
+                title="Saved diagrams"
+                direction="ltr"
+                >
+            <ul class="program-list">
+                        <li>Program 1</li>
+                        <li>Program 2</li>
+                    </ul>    
+            </el-drawer>
             <el-main class="main" style="overflow:hidden;">
                 <div 
                 id="drawflow"
@@ -39,28 +46,16 @@
                 @dragover="allowDrop($event)"></div>
                 
             </el-main>
-
-      
-           
-           
-         
-           
-  
-        </el-container>
-
-         <el-footer>
-              <el-button type="primary" @click="exportNodes">Generate python code</el-button>
-              <el-button type="success" @click="returnHomeModule">Return main block</el-button>
-        </el-footer>
-
-              <el-container>
-                <el-header>
-                    <h1>Program code</h1>
-                </el-header>
+            <el-drawer 
+                v-model="codeDrawer"
+                title="Code generated"
+                direction="rtl"
+                >
+                   <el-container>
+              
                 <el-main>
                     <div>
-                    Execute program
-                    <p style="text-align:justify;white-space:pre-wrap;">
+                    <p style="text-align:justify;white-space:pre-wrap; font-size:16px;">
                         <code>
                              {{pythonCode}}
                         </code>
@@ -68,6 +63,18 @@
                 </div>
                 </el-main>
             </el-container>
+            </el-drawer>
+            
+  
+        </el-container>
+
+         <el-footer>
+             <el-button type="info" @click="savedDiagramsDrawer = true">Open saved diagrams</el-button>
+              <el-button type="success" @click="returnHomeModule">Return main block</el-button>
+              <el-button type="primary" @click="exportNodes">Generate python code</el-button>
+        </el-footer>
+
+           
     </el-container>
 
   
@@ -140,6 +147,8 @@ export default {
             }
         ])
         const editor = shallowRef({})
+        const savedDiagramsDrawer = ref(false)
+        const codeDrawer = ref(false)
         const Vue = { version: 3, h, render };
         const pythonCode = ref('')
         const internalInstance = getCurrentInstance();
@@ -209,10 +218,14 @@ export default {
 
         function exportNodes()
         {
+            
             editor.value.changeModule('Home')
-            emitter.emit('execute-nodes')
-            const df = editor.value.export()
-            pythonCode.value = getPythonCode(df.drawflow,'Home')
+            setTimeout(() => {
+                codeDrawer.value = true
+                emitter.emit('execute-nodes')
+                const df = editor.value.export()
+                pythonCode.value = getPythonCode(df.drawflow,'Home')
+            },0)
           
         }
 
@@ -260,7 +273,9 @@ export default {
             allowDrop,
             returnHomeModule,
             exportNodes,
-            pythonCode
+            savedDiagramsDrawer,
+            pythonCode,
+            codeDrawer
          
         }
     }
@@ -278,6 +293,8 @@ export default {
 
     ul{
         list-style: none;
+        padding:0;
+        text-align: left;
     }
 
     .tools{
@@ -286,6 +303,7 @@ export default {
 
     ul.program-list > li {
         cursor:pointer;
+        padding:1em;
     }
 
     .container{
@@ -306,5 +324,6 @@ export default {
     .node{
         padding:2rem;
         margin:1rem;
+        text-align: center;
     }
 </style>

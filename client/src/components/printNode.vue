@@ -28,8 +28,15 @@ export default defineComponent({
                 {
                     const connectedNode = df.getNodeFromId(connection.node)
 
-                    alert(connectedNode.data.result)
+                    nodeData.value.data.pythoncode = `print(${connectedNode.data.pythoncode})`
+
+                    
                 }
+                else
+                {
+                    nodeData.value.data.pythoncode = `print()`
+                }
+                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
             })
         })
 
