@@ -69,7 +69,7 @@ import setExecProcedure from './setExecProcedure.js';
                         const currentNode = df.getNodeFromId(connection.node)
 
                         numbersInOperation.push(currentNode.data.result)
-                        expressionsInOperation.push(currentNode.data.pythonCode)
+                        expressionsInOperation.push(currentNode.data.pythoncode)
                     })
                       switch(binaryOp.value)
                         {
@@ -90,8 +90,7 @@ import setExecProcedure from './setExecProcedure.js';
                         }
                         
                         nodeData.value.data.result = result.value
-                        nodeData.value.data.terms = [expressionsInOperation[0],binaryOp.value,expressionsInOperation[1]]
-                        nodeData.value.data.pythonCode = `${expressionsInOperation[0]} ${binaryOp.value} ${expressionsInOperation[1]}\n`
+                        nodeData.value.data.pythoncode = `${expressionsInOperation[0]} ${binaryOp.value} ${expressionsInOperation[1]}\n`
                         df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
             }
                 

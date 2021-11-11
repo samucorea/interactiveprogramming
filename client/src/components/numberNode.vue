@@ -43,7 +43,7 @@ import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
 
            const handleChange = () => {
                nodeData.value.data.result = parseInt(result.value)
-               nodeData.value.data.pythonCode = `${result.value}`
+               nodeData.value.data.pythoncode = `${result.value}`
                
                
                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)

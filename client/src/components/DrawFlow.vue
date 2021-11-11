@@ -49,29 +49,21 @@
         </el-container>
 
          <el-footer>
-              <el-button @click="executeNodes">Execute nodes</el-button>
-              <el-button @click="exportNodes">Export nodes</el-button>
-              <el-button @click="returnHomeModule">Return main block</el-button>
+              <el-button type="primary" @click="exportNodes">Generate python code</el-button>
+              <el-button type="success" @click="returnHomeModule">Return main block</el-button>
         </el-footer>
 
               <el-container>
                 <el-header>
-                    Python program
+                    <h1>Program code</h1>
                 </el-header>
                 <el-main>
                     <div>
                     Execute program
-                    <p>
-                        # This program adds two numbers
-
-                        num1 = 1.5
-                        num2 = 6.3
-
-                        # Add two numbers
-                        sum = num1 + num2
-
-                        # Display the sum
-                        print('The sum of {0} and {1} is {2}'.format(num1, num2, sum))
+                    <p style="text-align:justify;white-space:pre-wrap;">
+                        <code>
+                             {{pythonCode}}
+                        </code>
                     </p>
                 </div>
                 </el-main>
@@ -89,7 +81,7 @@
 
 
 <script>
-import{shallowRef,onMounted, h, render, getCurrentInstance, readonly} from 'vue'
+import{shallowRef,onMounted, h, render, getCurrentInstance, readonly, ref} from 'vue'
 import numberNode from './numberNode.vue'
 import operationNode from './operationNode.vue'
 import assignNode from './assignNode.vue'
@@ -148,8 +140,8 @@ export default {
             }
         ])
         const editor = shallowRef({})
-        // const executeCode = ref(false)
         const Vue = { version: 3, h, render };
+        const pythonCode = ref('')
         const internalInstance = getCurrentInstance();
         const emitter = useEmitter()
         
@@ -186,10 +178,7 @@ export default {
             );
         }
 
-        const createNumberNode = () => {
-                addNodeToDrawFlow("numberNode",0,0)
-            
-        }
+      
 
         function drag(ev)
         {
@@ -210,10 +199,7 @@ export default {
 
     
 
-        function executeNodes() {
-            emitter.emit('execute-nodes')
-            
-        }
+      
         function returnHomeModule()
         {
             editor.value.changeModule('Home')
@@ -223,9 +209,11 @@ export default {
 
         function exportNodes()
         {
-        
+            editor.value.changeModule('Home')
+            emitter.emit('execute-nodes')
             const df = editor.value.export()
-            getPythonCode(df.drawflow,'Home')
+            pythonCode.value = getPythonCode(df.drawflow,'Home')
+          
         }
 
   
@@ -270,10 +258,9 @@ export default {
             drag,
             drop,
             allowDrop,
-            createNumberNode,
             returnHomeModule,
-            executeNodes,
             exportNodes,
+            pythonCode
          
         }
     }

@@ -90,11 +90,8 @@ export default defineComponent({
                 const nodeConnectedId = nodeData.value.inputs[key].connections[0].node
                 const nodeConnected = df.getNodeFromId(nodeConnectedId)
 
-                if(nodeConnected.name==='useVariableNode')
-                {
-                    console.log(nodeConnected.data.pythonCode)
-                }
-                comparisonItemExpressions.push(nodeConnected.data.pythonCode)
+              
+                comparisonItemExpressions.push(nodeConnected.data.pythoncode)
                 comparisonValues.push(nodeConnected.data.result)
 
             })
@@ -113,7 +110,7 @@ export default defineComponent({
             }
             
             nodeData.value.data.terms = [comparisonItemExpressions[0],logicDict[logicOperator.value],comparisonItemExpressions[1]]
-            nodeData.value.data.pythonCode = `if ${comparisonItemExpressions[0]} ${logicDict[logicOperator.value]} ${comparisonItemExpressions[1]}:\n`
+            nodeData.value.data.pythoncode = `if ${comparisonItemExpressions[0]} ${logicDict[logicOperator.value]} ${comparisonItemExpressions[1]}:\n`
             nodeData.value.data.conditionMet = conditionMet.value
 
             df.updateNodeDataFromId(nodeId.value,nodeData.value.data)

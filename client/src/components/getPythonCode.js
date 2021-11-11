@@ -1,4 +1,4 @@
-export default function getPythonCode(modules, moduleSelected, tab = '') {
+export default function getPythonCode(modules, moduleSelected, prefix = '') {
     let code = ''
     const nodes = modules[moduleSelected].data
     const nodesarr = []
@@ -33,25 +33,34 @@ export default function getPythonCode(modules, moduleSelected, tab = '') {
             }
 
 
-            code = tab + element.data.pythonCode + code
+            code = prefix + element.data.pythoncode + code
 
 
 
         }
 
 
-        if (element.name === 'conditionalNode') {
+        else if (element.name === 'conditionalNode') {
 
 
             const mainBlockCode = getPythonCode(modules, `conditional-main-block-${element.id}`, '    ')
             const elseBlockCode = getPythonCode(modules, `conditional-else-block-${element.id}`, '    ')
 
-            code = element.data.pythonCode + mainBlockCode + 'else:\n' + elseBlockCode + code
-
-
+            code = prefix + element.data.pythoncode + mainBlockCode + 'else:\n' + elseBlockCode + code
 
 
         }
+
+        else if (element.name === 'operationNode') {
+            code = prefix + element.data.pythoncode + code
+        }
+
+        else if (element.name === 'loopNode') {
+            const loopBlock = getPythonCode(modules, `loop-${element.id}`, '    ')
+
+            code = prefix + element.data.pythoncode + loopBlock + code
+        }
+
 
 
 
@@ -76,7 +85,7 @@ export default function getPythonCode(modules, moduleSelected, tab = '') {
     //     const node = orderedNodes[i]
 
     //     if (node.name === 'operationNode') {
-    //         code = node.data.pythonCode + code
+    //         code = node.data.pythoncode + code
     //     }
 
     // }

@@ -51,7 +51,7 @@ export default defineComponent({
 
                 nodeData.value.data.from = parseInt(from.value)
                 nodeData.value.data.to = parseInt(to.value)
-                nodeData.value.data.pythonCode = `for i in range(${from.value},${to.value}):\n`
+                nodeData.value.data.pythoncode = `for i in range(${from.value},${to.value}):\n`
 
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
             })

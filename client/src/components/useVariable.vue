@@ -2,7 +2,7 @@
     <div ref="root">
         <div>Node {{nodeId}}</div>
         <div>Variable</div>
-        <el-input size="small"  v-model="variableName" type="text" />
+        <el-input df-pythoncode size="small"  v-model="variableName" type="text" />
         <div>
             {{variableValue}}
         </div>
@@ -62,7 +62,6 @@ export default defineComponent({
 
                     
                 }
-                nodeData.value.data.pythonCode = variableName.value
                 nodeData.value.data.name = variableName.value
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }

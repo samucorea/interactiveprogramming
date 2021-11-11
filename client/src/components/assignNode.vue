@@ -16,7 +16,7 @@
 import { ref } from '@vue/reactivity'
 import { getCurrentInstance, nextTick, onMounted } from '@vue/runtime-core'
 import useEmitter from './useEmitter.js'
-import handleModule from './handleModule.js'
+// import handleModule from './handleModule.js'
 import setExecProcedure from './setExecProcedure.js'
 
 export default {
@@ -65,10 +65,10 @@ export default {
             }
             const moduleName = df.getModuleFromNodeId(nodeId.value)
             
-             if(!handleModule(moduleName,df))
-             {
-                 return;
-             }
+            //  if(!handleModule(moduleName,df))
+            //  {
+            //      return;
+            //  }
 
            
             nodeData.value = df.getNodeFromId(nodeId.value)
@@ -88,7 +88,7 @@ export default {
          
                 nodeData.value.data.name = assignName.value
                 nodeData.value.data.value = assignValue.value
-                nodeData.value.data.pythonCode = `${assignName.value} = ${connectedNode.data.pythonCode}\n`
+                nodeData.value.data.pythoncode = `${assignName.value} = ${connectedNode.data.pythoncode}\n`
            
 
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
