@@ -90,7 +90,7 @@ import setExecProcedure from './setExecProcedure.js';
                         }
                         
                         nodeData.value.data.result = result.value
-                        nodeData.value.data.pythoncode = `${expressionsInOperation[0]} ${binaryOp.value} ${expressionsInOperation[1]}\n`
+                        nodeData.value.data.pythoncode = `${expressionsInOperation[0]} ${binaryOp.value} ${expressionsInOperation[1]}`
                         df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
             }
                 

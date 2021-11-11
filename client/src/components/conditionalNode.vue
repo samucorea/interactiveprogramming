@@ -77,11 +77,7 @@ export default defineComponent({
 
         function executeNode()
         {
-            // const moduleName = df.getModuleFromNodeId(nodeId.value)
-            // if(!handleModule(moduleName,df))
-            // {
-            //     return;
-            // }
+           
             nodeData.value = df.getNodeFromId(nodeId.value)
             const comparisonValues = []
             const comparisonItemExpressions = []

@@ -25,12 +25,10 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
             break;
         }
         const element = orderedNodes.pop();
+        console.log(element.data)
         if (element.name === 'assignNode') {
-            const connectedNodeIndex = orderedNodes.findIndex(node => node.id === parseInt(element.inputs.input_1.connections[0].node))
 
-            if (connectedNodeIndex !== -1) {
-                orderedNodes.splice(connectedNodeIndex, 1)
-            }
+            removeConnectedNodes(orderedNodes, element)
 
 
             code = prefix + element.data.pythoncode + code
@@ -52,7 +50,9 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
         }
 
         else if (element.name === 'operationNode') {
-            code = prefix + element.data.pythoncode + code
+
+            removeConnectedNodes(orderedNodes, element)
+            code = prefix + element.data.pythoncode + '\n' + code
         }
 
         else if (element.name === 'loopNode') {
@@ -73,25 +73,22 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
 
     return code
 
+}
+
+function removeConnectedNodes(nodes, nodeSelected) {
+    if (nodes.length === 0) {
+        return;
+    }
+    const inputs = nodeSelected.inputs
+    Object.keys(inputs).forEach(input => {
+        const connectedNode = nodes.find(node => node.id === parseInt(inputs[input].connections[0].node))
+        if (connectedNode !== undefined) {
+            removeConnectedNodes(nodes, connectedNode)
+            nodes.splice(nodes.indexOf(connectedNode), 1)
+
+        }
+    })
 
 
 
-
-
-
-
-
-
-    // orderedNodes.sort((a, b) => a.pos_x > b.pos_x)
-    // console.log(orderedNodes.length)
-    // for (let i = orderedNodes.length; i >= 0; i--) {
-    //     const node = orderedNodes[i]
-
-    //     if (node.name === 'operationNode') {
-    //         code = node.data.pythoncode + code
-    //     }
-
-    // }
-    // console.log(orderedNodes)
-    // console.log(code)
 }
