@@ -7,6 +7,7 @@
 
 <script>
 import { ref, defineComponent, onMounted, nextTick,getCurrentInstance } from 'vue'
+import setExecProcedure from './setExecProcedure'
 import useEmitter from './useEmitter'
 
 export default defineComponent({
@@ -19,10 +20,14 @@ export default defineComponent({
         onMounted(async () => {
             await nextTick()
             nodeId.value = root.value.parentElement.parentElement.id.slice(5)
-            // nodeData.value = df.getNodeFromId(nodeId.value)
+            nodeData.value = df.getNodeFromId(nodeId.value)
     
-            emitter.on('execute-nodes', () => {
-                nodeData.value = df.getNodeFromId(nodeId.value)
+            setExecProcedure(emitter,executeNode,df,nodeData.value)
+        })
+
+        function executeNode()
+        {
+            nodeData.value = df.getNodeFromId(nodeId.value)
                 const connection = nodeData.value.inputs.input_1.connections[0]
                 if(connection)
                 {
@@ -37,8 +42,7 @@ export default defineComponent({
                     nodeData.value.data.pythoncode = `print()`
                 }
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
-            })
-        })
+        }
 
         return {
             root,

@@ -1,14 +1,11 @@
 <template>
     <div ref="root">
-        <div>Node {{nodeId}}</div>
+        <div>Node {{ nodeId }}</div>
         <div style="margin-bottom:10px;">Assign</div>
         <div style="margin-bottom:10px;">
-           <el-input df-name v-model="assignName"  placeholder="variable name..." type="text" />
+            <el-input df-name v-model="assignName" placeholder="variable name..." type="text" />
         </div>
-        <div >
-            {{assignValue   }}
-        </div>
-        
+        <div>{{ assignValue }}</div>
     </div>
 </template>
 
@@ -32,71 +29,68 @@ export default {
         let df = internalInstance.appContext.config.globalProperties.$df.value;
         const variables = internalInstance.appContext.config.globalProperties.$variables
 
-        
+
         onMounted(async () => {
             await nextTick()
             nodeId.value = root.value.parentElement.parentElement.id.slice(5)
             nodeData.value = df.getNodeFromId(nodeId.value)
-            
-          
+
+
 
 
             assignName.value = nodeData.value.data.name
             assignValue.value = nodeData.value.data.value
 
-            setExecProcedure(emitter,executeNode,df,nodeData.value)
-        
-            
+            setExecProcedure(emitter, executeNode, df, nodeData.value)
+
+
         })
-        return{
+        return {
             assignName,
             assignValue,
             root,
             nodeId
         }
 
-        function executeNode()
-        {
-            console.log('subscribed')
-            if(!isNaN(assignName.value))
-            {
+        function executeNode() {
+
+            if (!isNaN(assignName.value)) {
                 alert(`Variable name can't be a number at Node ${nodeId.value}`)
                 return;
             }
             const moduleName = df.getModuleFromNodeId(nodeId.value)
-            
+
             //  if(!handleModule(moduleName,df))
             //  {
             //      return;
             //  }
 
-           
+
             nodeData.value = df.getNodeFromId(nodeId.value)
             const connectedNode = df.getNodeFromId(nodeData.value.inputs.input_1.connections[0].node)
             const scopeVariables = variables[moduleName]
-           
 
-                assignValue.value = connectedNode.data.result
 
-                if(scopeVariables === undefined)
-                {
-                    variables[moduleName] = {}
-                }
+            assignValue.value = connectedNode.data.result
 
-                variables[moduleName][assignName.value] = assignValue.value
+            if (scopeVariables === undefined) {
+                variables[moduleName] = {}
+            }
 
-         
-                nodeData.value.data.name = assignName.value
-                nodeData.value.data.value = assignValue.value
-                nodeData.value.data.pythoncode = `${assignName.value} = ${connectedNode.data.pythoncode}\n`
-           
+            variables[moduleName][assignName.value] = assignValue.value
 
-                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
+
+            nodeData.value.data.name = assignName.value
+            nodeData.value.data.value = assignValue.value
+            nodeData.value.data.pythoncode = `${assignName.value} = ${connectedNode.data.pythoncode}\n`
+
+
+            df.updateNodeDataFromId(nodeId.value, nodeData.value.data)
         }
-     
 
 
-        
+
+
 
     },
 }

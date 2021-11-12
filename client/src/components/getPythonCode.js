@@ -13,6 +13,7 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
             || node.name === 'assignNode'
             || node.name === 'conditionalNode'
             || node.name === 'loopNode'
+            || node.name === 'printNode'
     })
 
     const orderedNodes = filteredNodes.sort((a, b) => {
@@ -60,6 +61,7 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
             code = prefix + element.data.pythoncode + loopBlock + code
         }
         else if (element.name === 'printNode') {
+            removeConnectedNodes(orderedNodes, element)
             code = prefix + element.data.pythoncode
         }
 

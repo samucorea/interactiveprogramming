@@ -4,42 +4,39 @@ export default function setExecProcedure(emitter, executeNode, df, node) {
 
     const handleDelete = id => {
 
-        if (node.id === parseInt(id)) {
-            if (node.name === 'conditionalNode') {
-                const mainBlock = df.drawflow.drawflow[`conditional-main-block-${node.id}`]
-                const elseBlock = df.drawflow.drawflow[`conditional-else-block-${node.id}`]
 
-                if (mainBlock !== undefined && elseBlock !== undefined) {
-                    Object.keys(mainBlock.data).forEach(id => {
-                        df.removeNodeId(`node-${id}`)
-                        df.dispatch('nodeRemoved', id)
-                    })
+        if (node.name === 'conditionalNode') {
+            const mainBlock = df.drawflow.drawflow[`conditional-main-block-${node.id}`]
+            const elseBlock = df.drawflow.drawflow[`conditional-else-block-${node.id}`]
 
-                    Object.keys(elseBlock.data).forEach(id => {
-                        df.removeNodeId(`node-${id}`)
-                        df.dispatch('nodeRemoved', id)
-                    })
-                    df.removeModule(`conditional-main-block-${node.id}`)
-                    df.removeModule(`conditional-else-block-${node.id}`)
-                }
+            removeNodesFromModules(df, mainBlock, elseBlock)
 
-            }
-            else if (node.name === 'loopNode') {
-                const loopBlock = df.drawflow.drawflow[`loop-${id}`]
-
-                if (loopBlock !== undefined) {
-                    Object.keys(loopBlock.data).forEach(id => {
-                        df.removeNodeId(`node-${id}`)
-                        df.dispatch('nodeRemoved', id)
-                    })
-                }
-                df.removeModule(`loop-${node.id}`)
-            }
-            emitter.off('execute-nodes', executeNode)
-            df.removeListener('nodeRemoved', handleDelete)
         }
+        else if (node.name === 'loopNode') {
+            const loopBlock = df.drawflow.drawflow[`loop-${id}`]
+
+            removeNodesFromModules(df, loopBlock)
+        }
+        emitter.off('execute-nodes', executeNode)
+        df.removeListener('nodeRemoved', handleDelete)
+
 
     }
     emitter.on('execute-nodes', executeNode)
     df.on('nodeRemoved', handleDelete)
+}
+
+function removeNodesFromModules(df, ...modules) {
+    modules.forEach(module => {
+        const moduleBlock = df.drawflow.drawflow[module]
+
+        if (moduleBlock !== undefined) {
+            Object.keys(moduleBlock.data).forEach(id => {
+                df.removeNodeId(`node-${id}`)
+                df.dispatch('nodeRemoved', id)
+            })
+        }
+
+        df.removeModule(module)
+    })
 }
