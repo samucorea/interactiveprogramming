@@ -33,13 +33,14 @@ export default defineComponent({
                 {
                     const connectedNode = df.getNodeFromId(connection.node)
 
-                    nodeData.value.data.pythoncode = `print(${connectedNode.data.pythoncode})`
+                    nodeData.value.data.pythoncode = `print(${connectedNode.data.pythoncode})\n`
 
                     
                 }
                 else
                 {
-                    nodeData.value.data.pythoncode = `print()`
+                    alert(`Print node should have input connected at Node ${nodeId.value}`)
+                    nodeData.value.data.pythoncode = `print()\n`
                 }
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }

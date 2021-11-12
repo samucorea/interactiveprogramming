@@ -28,21 +28,22 @@ import setExecProcedure from './setExecProcedure.js';
             const nodeId = ref(0)
             const binaryOp = ref('+')
             const nodeData = ref({})
-            //const nodeNumbers = ref({})
+
 
             let result = ref(0)
             let df = getCurrentInstance().appContext.config.globalProperties.$df.value
         
             onMounted(async () => {
                 await nextTick()
+                console.log('mounted')
                 
                 nodeId.value = root.value.parentElement.parentElement.id.slice(5)
                 nodeData.value = df.getNodeFromId(nodeId.value)
                 result.value = nodeData.value.data.result
               
                 
-
                 setExecProcedure(emitter,executeNode,df,nodeData.value)
+              
                
                     
                     
@@ -50,27 +51,38 @@ import setExecProcedure from './setExecProcedure.js';
 
             function executeNode()
             {
-                // const moduleName = df.getModuleFromNodeId(nodeId.value)
-            
-                //     if(!handleModule(moduleName,df))
-                // {
-                //     return;
-                // }
+                
                     result.value = 0
                     nodeData.value = df.getNodeFromId(nodeId.value)
                     const numbersInOperation = []
                     const expressionsInOperation = []
                     const inputs = nodeData.value.inputs
                 
-                    
-                    Object.keys(inputs).forEach(key => {
-                        const input = inputs[key]
-                        const connection = input.connections[0]
-                        const currentNode = df.getNodeFromId(connection.node)
+                    try
+                    {
+                        Object.keys(inputs).forEach(key => {
 
-                        numbersInOperation.push(currentNode.data.result)
-                        expressionsInOperation.push(currentNode.data.pythoncode)
+                       
+
+                             const input = inputs[key]
+                            const connection = input.connections[0]
+                       
+                            const currentNode = df.getNodeFromId(connection.node)
+
+                        
+
+                            numbersInOperation.push(currentNode.data.result)
+                            expressionsInOperation.push(currentNode.data.pythoncode)
+                        
+                       
+                       
                     })
+                    }
+                    catch
+                    {
+                        alert(`All operation node inputs should be connected at Node ${nodeId.value}`)
+                    }
+                    
                       switch(binaryOp.value)
                         {
 

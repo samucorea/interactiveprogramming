@@ -62,7 +62,7 @@ export default defineComponent({
 
                     
                 }
-                nodeData.value.data.name = variableName.value
+                nodeData.value.data.pythoncode = variableName.value
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }
        

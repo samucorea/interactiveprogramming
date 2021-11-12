@@ -11,6 +11,8 @@
 <script>
     import { ref } from "@vue/reactivity"
 import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
+import setExecProcedure from './setExecProcedure';
+import useEmitter from './useEmitter';
 
 
 
@@ -23,6 +25,7 @@ import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
             const nodeId = ref(0)
             const result = ref(0)
             const nodeData = ref({})
+            const emitter = useEmitter()
         
             
             let df = getCurrentInstance().appContext.config.globalProperties.$df.value;
@@ -35,6 +38,7 @@ import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
                nodeData.value = df.getNodeFromId(nodeId.value)
                result.value = nodeData.value.data.result
 
+                setExecProcedure(emitter,executeNode,df,nodeData.value)
 
               
                
@@ -48,6 +52,17 @@ import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
                
                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
                
+           }
+
+           function executeNode()
+           {
+               if(isNaN(result.value))
+               {
+                 result.value = 0
+                 handleChange()
+                 alert(`Node number input should be a number at Node ${nodeId.value}`)
+                 
+               }
            }
 
 

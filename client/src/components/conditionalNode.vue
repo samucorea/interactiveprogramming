@@ -45,6 +45,7 @@ export default defineComponent({
             nodeId.value = root.value.parentElement.parentElement.id.slice(5)
             nodeData.value = df.getNodeFromId(nodeId.value)
             logicOperator.value = nodeData.value.data.logicOperator
+
             if(df.drawflow.drawflow[`conditional-main-block-${nodeId.value}`] === undefined)
             {
                 df.addModule(`conditional-main-block-${nodeId.value}`)
@@ -81,8 +82,9 @@ export default defineComponent({
             nodeData.value = df.getNodeFromId(nodeId.value)
             const comparisonValues = []
             const comparisonItemExpressions = []
-
-            Object.keys(nodeData.value.inputs).forEach(key => {
+            try
+            {
+                Object.keys(nodeData.value.inputs).forEach(key => {
                 const nodeConnectedId = nodeData.value.inputs[key].connections[0].node
                 const nodeConnected = df.getNodeFromId(nodeConnectedId)
 
@@ -90,20 +92,38 @@ export default defineComponent({
                 comparisonItemExpressions.push(nodeConnected.data.pythoncode)
                 comparisonValues.push(nodeConnected.data.result)
 
-            })
-
-            switch(logicOperator.value)
-            {
-                case 'Greater than':
-                    conditionMet.value = comparisonValues[0] > comparisonValues[1]
-                break;
-                case 'Lesser than':
-                    conditionMet.value = comparisonValues[0] < comparisonValues[1]
-                break;
-                case 'Equal than':
-                    conditionMet.value = comparisonValues[0] === comparisonValues[1]
-                break;
+                })
             }
+            catch
+            {
+                alert(`All conditionalNode inputs should be connected at Node ${nodeId.value}`)
+            }
+
+            if(logicOperator.value === undefined)
+            {
+                logicOperator.value = 'Equal than'
+                alert(`Logic operator should be specified at node ${nodeId.value}`)
+            }
+            else
+            {
+                switch(logicOperator.value)
+                {
+                    case 'Greater than':
+                        conditionMet.value = comparisonValues[0] > comparisonValues[1]
+                    break;
+                    case 'Lesser than':
+                        conditionMet.value = comparisonValues[0] < comparisonValues[1]
+                    break;
+                    case 'Equal than':
+                        conditionMet.value = comparisonValues[0] === comparisonValues[1]
+                    break;
+                }
+            }
+                    
+            
+            
+
+            
             
             nodeData.value.data.terms = [comparisonItemExpressions[0],logicDict[logicOperator.value],comparisonItemExpressions[1]]
             nodeData.value.data.pythoncode = `if ${comparisonItemExpressions[0]} ${logicDict[logicOperator.value]} ${comparisonItemExpressions[1]}:\n`

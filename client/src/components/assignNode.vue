@@ -60,10 +60,7 @@ export default {
             }
             const moduleName = df.getModuleFromNodeId(nodeId.value)
 
-            //  if(!handleModule(moduleName,df))
-            //  {
-            //      return;
-            //  }
+
 
 
             nodeData.value = df.getNodeFromId(nodeId.value)

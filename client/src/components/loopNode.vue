@@ -63,7 +63,17 @@ export default defineComponent({
         {
             nodeData.value = df.getNodeFromId(nodeId.value)
 
-            nodeData.value.data.from = parseInt(from.value)
+            nodeData.value.data.from = parseInt(from.value) || 0
+            if(isNaN(parseInt(to.value)))
+            {
+                to.value = 0
+                alert(`To number on loopNode should be specified at Node ${nodeId.value}`)
+            }
+
+            if(isNaN(parseInt(from.value)))
+            {
+                from.value = 0
+            }
             nodeData.value.data.to = parseInt(to.value)
             nodeData.value.data.pythoncode = `for i in range(${from.value},${to.value}):\n`
 

@@ -17,11 +17,13 @@ export default function setExecProcedure(emitter, executeNode, df, node) {
 
             removeNodesFromModules(df, loopBlock)
         }
-        emitter.off('execute-nodes', executeNode)
-        df.removeListener('nodeRemoved', handleDelete)
+
 
 
     }
+    emitter.off('execute-nodes', executeNode)
+    df.removeListener('nodeRemoved', handleDelete)
+
     emitter.on('execute-nodes', executeNode)
     df.on('nodeRemoved', handleDelete)
 }

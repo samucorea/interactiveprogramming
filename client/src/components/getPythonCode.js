@@ -62,7 +62,7 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
         }
         else if (element.name === 'printNode') {
             removeConnectedNodes(orderedNodes, element)
-            code = prefix + element.data.pythoncode
+            code = prefix + element.data.pythoncode + code
         }
 
 

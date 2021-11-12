@@ -1,8 +1,9 @@
 <template>
     <el-container>
-        <el-header class="header">
+        <el-header height="100px" class="header">
          
         <h1>Interactive programming</h1>
+        <h3>{{currentModule}}</h3>
         
         
         </el-header>
@@ -70,7 +71,7 @@
 
          <el-footer>
              <el-button type="info" @click="savedDiagramsDrawer = true">Open saved diagrams</el-button>
-              <el-button type="success" @click="returnHomeModule">Return main block</el-button>
+              <el-button v-if="currentModule !== 'Home'" type="success" @click="returnHomeModule">Return main block</el-button>
               <el-button type="primary" @click="exportNodes">Generate python code</el-button>
         </el-footer>
 
@@ -102,6 +103,7 @@ import DrawFlow from 'drawflow'
 //eslint-disable-next-line
 import styleDrawflow from "drawflow/dist/drawflow.min.css";
 import useEmitter from './useEmitter.js'
+
 
 export default {
     name:'drawflow',
@@ -152,6 +154,7 @@ export default {
         const Vue = { version: 3, h, render };
         const pythonCode = ref('')
         const internalInstance = getCurrentInstance();
+        const currentModule = ref('Home')
         const emitter = useEmitter()
         
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
@@ -250,14 +253,29 @@ export default {
 
         
             editor.value.on("connectionCreated", function(info) {
-            const nodeInfo = editor.value.getNodeFromId(info.output_id);
-            if(nodeInfo.outputs[info.output_class].connections.length > 1) {
-                const removeConnectionInfo = nodeInfo.outputs[info.output_class].connections[0];
+            const nodeInfoOutput = editor.value.getNodeFromId(info.output_id);
+            const nodeInfoInput = editor.value.getNodeFromId(info.input_id);
+
+            if(nodeInfoOutput.outputs[info.output_class].connections.length > 1) {
+                const removeConnectionInfo = nodeInfoOutput.outputs[info.output_class].connections[0];
                 editor.value.removeSingleConnection(info.output_id, removeConnectionInfo.node, info.output_class, removeConnectionInfo.output);
             }
+            else if(nodeInfoInput.inputs[info.input_class].connections.length > 1) {
+                const removeConnectionInfo = nodeInfoInput.inputs[info.input_class].connections[0];
+                editor.value.removeSingleConnection(removeConnectionInfo.node, info.input_id, removeConnectionInfo.input, info.input_class);
+            }
+            
+            
+        
             });
 
+            editor.value.on('moduleChanged', name => {
+                currentModule.value = name
+            })
 
+        
+
+          
             
 
             
@@ -275,7 +293,8 @@ export default {
             exportNodes,
             savedDiagramsDrawer,
             pythonCode,
-            codeDrawer
+            codeDrawer,
+            currentModule
          
         }
     }
