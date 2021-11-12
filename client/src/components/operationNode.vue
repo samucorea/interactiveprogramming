@@ -42,7 +42,7 @@ import setExecProcedure from './setExecProcedure.js';
               
                 
 
-                setExecProcedure(emitter,executeNode,df,nodeId)
+                setExecProcedure(emitter,executeNode,df,nodeData.value)
                
                     
                     

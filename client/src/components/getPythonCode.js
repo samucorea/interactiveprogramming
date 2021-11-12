@@ -25,7 +25,6 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
             break;
         }
         const element = orderedNodes.pop();
-        console.log(element.data)
         if (element.name === 'assignNode') {
 
             removeConnectedNodes(orderedNodes, element)

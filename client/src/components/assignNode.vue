@@ -44,7 +44,7 @@ export default {
             assignName.value = nodeData.value.data.name
             assignValue.value = nodeData.value.data.value
 
-            setExecProcedure(emitter,executeNode,df,nodeId)
+            setExecProcedure(emitter,executeNode,df,nodeData.value)
         
             
         })
@@ -57,7 +57,7 @@ export default {
 
         function executeNode()
         {
-            
+            console.log('subscribed')
             if(!isNaN(assignName.value))
             {
                 alert(`Variable name can't be a number at Node ${nodeId.value}`)

@@ -15,6 +15,7 @@
 
 <script>
 import { defineComponent, nextTick, onMounted,ref,getCurrentInstance } from 'vue'
+import setExecProcedure from './setExecProcedure'
 import useEmitter from './useEmitter'
 
 
@@ -44,17 +45,11 @@ export default defineComponent({
                 df.addModule(blockName)
             }
 
+            setExecProcedure(emitter,executeNode,df,nodeData.value)
+
             
             
-            emitter.on('execute-nodes', () => {
-                nodeData.value = df.getNodeFromId(nodeId.value)
-
-                nodeData.value.data.from = parseInt(from.value)
-                nodeData.value.data.to = parseInt(to.value)
-                nodeData.value.data.pythoncode = `for i in range(${from.value},${to.value}):\n`
-
-                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
-            })
+          
 
 
         })
@@ -62,6 +57,17 @@ export default defineComponent({
         function handleClick()
         {
             df.changeModule(blockName)
+        }
+
+        function executeNode()
+        {
+            nodeData.value = df.getNodeFromId(nodeId.value)
+
+            nodeData.value.data.from = parseInt(from.value)
+            nodeData.value.data.to = parseInt(to.value)
+            nodeData.value.data.pythoncode = `for i in range(${from.value},${to.value}):\n`
+
+            df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }
 
         return{

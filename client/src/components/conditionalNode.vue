@@ -54,7 +54,7 @@ export default defineComponent({
                 df.addModule(`conditional-else-block-${nodeId.value}`)
             }
 
-            setExecProcedure(emitter,executeNode,df,nodeId)
+            setExecProcedure(emitter,executeNode,df,nodeData.value)
 
             
 
