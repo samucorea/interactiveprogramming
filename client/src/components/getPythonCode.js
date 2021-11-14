@@ -1,6 +1,10 @@
 export default function getPythonCode(modules, moduleSelected, prefix = '') {
     let code = ''
     const nodes = modules[moduleSelected].data
+
+    if (nodes.length === 0) {
+        return code
+    }
     const nodesarr = []
     Object.keys(nodes).forEach(id => {
         nodesarr.push(nodes[id])
@@ -44,9 +48,19 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
             const mainBlockCode = getPythonCode(modules, `conditional-main-block-${element.id}`, prefix + '    ')
             const elseBlockCode = getPythonCode(modules, `conditional-else-block-${element.id}`, prefix + '    ')
 
-            code = prefix + element.data.pythoncode + mainBlockCode + prefix + 'else:\n' + elseBlockCode + code
+            let conditionalCodeBlock = prefix + element.data.pythoncode
+            if (mainBlockCode === '') {
+                conditionalCodeBlock += prefix + '    pass\n'
+            }
+            else {
+                conditionalCodeBlock += mainBlockCode
+            }
 
+            if (elseBlockCode !== '') {
+                conditionalCodeBlock += prefix + 'else:\n' + elseBlockCode
+            }
 
+            code = conditionalCodeBlock + code
         }
 
         else if (element.name === 'operationNode') {
@@ -64,14 +78,7 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
             removeConnectedNodes(orderedNodes, element)
             code = prefix + element.data.pythoncode + code
         }
-
-
-
-
     }
-
-
-
     return code
 
 }

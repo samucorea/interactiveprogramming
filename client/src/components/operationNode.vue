@@ -19,6 +19,7 @@ import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
 import useEmitter from './useEmitter.js';
 // import handleModule from './handleModule.js';
 import setExecProcedure from './setExecProcedure.js';
+import showError from './showError.js';
     export default{
 
         setup()
@@ -35,7 +36,7 @@ import setExecProcedure from './setExecProcedure.js';
         
             onMounted(async () => {
                 await nextTick()
-                console.log('mounted')
+          
                 
                 nodeId.value = root.value.parentElement.parentElement.id.slice(5)
                 nodeData.value = df.getNodeFromId(nodeId.value)
@@ -43,6 +44,8 @@ import setExecProcedure from './setExecProcedure.js';
               
                 
                 setExecProcedure(emitter,executeNode,df,nodeData.value)
+
+                
               
                
                     
@@ -51,9 +54,14 @@ import setExecProcedure from './setExecProcedure.js';
 
             function executeNode()
             {
-                
+                    
                     result.value = 0
                     nodeData.value = df.getNodeFromId(nodeId.value)
+
+                    if(nodeData.value === undefined)
+                    {
+                        return;
+                    }
                     const numbersInOperation = []
                     const expressionsInOperation = []
                     const inputs = nodeData.value.inputs
@@ -80,7 +88,9 @@ import setExecProcedure from './setExecProcedure.js';
                     }
                     catch
                     {
-                        alert(`All operation node inputs should be connected at Node ${nodeId.value}`)
+                        setTimeout(()=> {
+                            showError(`All operation node inputs should be connected at Node ${nodeId.value}`)
+                        },0)
                     }
                     
                       switch(binaryOp.value)

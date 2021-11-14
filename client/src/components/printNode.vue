@@ -8,6 +8,7 @@
 <script>
 import { ref, defineComponent, onMounted, nextTick,getCurrentInstance } from 'vue'
 import setExecProcedure from './setExecProcedure'
+import showError from './showError'
 import useEmitter from './useEmitter'
 
 export default defineComponent({
@@ -39,7 +40,9 @@ export default defineComponent({
                 }
                 else
                 {
-                    alert(`Print node should have input connected at Node ${nodeId.value}`)
+                    setTimeout(() => {
+                        showError(`Print node should have input connected at Node ${nodeId.value}`)
+                    },200)
                     nodeData.value.data.pythoncode = `print()\n`
                 }
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)

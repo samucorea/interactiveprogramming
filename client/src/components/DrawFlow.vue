@@ -158,7 +158,6 @@ export default {
         const emitter = useEmitter()
         
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
-        internalInstance.appContext.app._context.config.globalProperties.$variables = {'Home': {}}
         function addNodeToDrawFlow(name, pos_x, pos_y) {
             
              pos_x =
@@ -222,13 +221,23 @@ export default {
         function exportNodes()
         {
             
-            editor.value.changeModule('Home')
-            setTimeout(() => {
+                
+                
                 codeDrawer.value = true
-                emitter.emit('execute-nodes')
+                
+                emitter.emit('execute-nodes',currentModule.value)
+
+                setTimeout(() => {
+                    emitter.all.clear()
+                    editor.value.changeModule('Home')
+                },0)
+               
+                editor.value.on('moduleChanged', () => {
+                    console.log(emitter)
+                })
                 const df = editor.value.export()
                 pythonCode.value = getPythonCode(df.drawflow,'Home')
-            },0)
+           
           
         }
 

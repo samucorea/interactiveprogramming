@@ -13,6 +13,7 @@
 import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
 import setExecProcedure from './setExecProcedure';
 import useEmitter from './useEmitter';
+import showError from './showError';
 
 
 
@@ -60,7 +61,9 @@ import useEmitter from './useEmitter';
                {
                  result.value = 0
                  handleChange()
-                 alert(`Node number input should be a number at Node ${nodeId.value}`)
+                 setTimeout(() => {
+                     showError(`Please, specify a number at the number Node ${nodeId.value}`)
+                 },200)
                  
                }
            }

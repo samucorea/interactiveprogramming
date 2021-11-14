@@ -2,7 +2,7 @@
     <div ref="root">
         <div>Node {{nodeId}}</div>
         <div>Variable</div>
-        <el-input df-pythoncode size="small"  v-model="variableName" type="text" />
+        <el-input @change="handleChange" df-pythoncode size="small"  v-model="variableName" type="text" />
         <div>
             {{variableValue}}
         </div>
@@ -12,8 +12,8 @@
 <script>
 import { defineComponent,onMounted,ref,getCurrentInstance,nextTick } from 'vue'
 import useEmitter from './useEmitter';
-import handleModule from './handleModule';
 import setExecProcedure from './setExecProcedure';
+import showError from './showError';
 
 export default defineComponent({
     setup() {
@@ -23,7 +23,6 @@ export default defineComponent({
         const internalInstance = getCurrentInstance()
         const variableName = ref('')
         const variableValue = ref('')
-        const variables = internalInstance.appContext.app._context.config.globalProperties.$variables
         const df = internalInstance.appContext.app._context.config.globalProperties.$df.value
         const emitter = useEmitter()
 
@@ -35,7 +34,7 @@ export default defineComponent({
 
            
 
-            variableName.value = nodeData.value.data.name
+            variableName.value = nodeData.value.data.pythoncode
             variableValue.value = nodeData.value.data.result
 
             setExecProcedure(emitter,executeNode,df,nodeId)
@@ -46,24 +45,24 @@ export default defineComponent({
         
         function executeNode()
         {
-            const moduleName = df.getModuleFromNodeId(nodeId.value)
+            if(variableName.value === undefined || !isNaN(variableName.value))
+            {
+                setTimeout(() => {
+                    showError(`Please, specify the variable to use at Node ${nodeId.value}`)
+                },200)
+            }
             
-                    if(!handleModule(moduleName,df))
-                {
-                    return;
-                }
-              let value = variables[moduleName][variableName.value]
-                
-                if(value !== undefined)
-                {
-                    variableValue.value = value
-                 
-                    nodeData.value.data.result = value
-
-                    
-                }
                 nodeData.value.data.pythoncode = variableName.value
                 df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
+        }
+
+        function handleChange()
+        {
+            nodeData.value = df.getNodeFromId(nodeId.value)
+
+            nodeData.value.pythoncode = variableName.value
+
+            df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }
        
 
@@ -71,7 +70,8 @@ export default defineComponent({
             variableName,
             variableValue,
             root,
-            nodeId
+            nodeId,
+            handleChange
         }
     },
 })

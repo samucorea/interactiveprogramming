@@ -16,6 +16,7 @@
 <script>
 import { defineComponent, nextTick, onMounted,ref,getCurrentInstance } from 'vue'
 import setExecProcedure from './setExecProcedure'
+import showError from './showError'
 import useEmitter from './useEmitter'
 
 
@@ -67,7 +68,9 @@ export default defineComponent({
             if(isNaN(parseInt(to.value)))
             {
                 to.value = 0
-                alert(`To number on loopNode should be specified at Node ${nodeId.value}`)
+                setTimeout(() => {
+                    showError(`Please, specify to what number the loop node should execute at input at Node ${nodeId.value}`)
+                },200)
             }
 
             if(isNaN(parseInt(from.value)))

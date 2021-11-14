@@ -15,6 +15,7 @@ import { getCurrentInstance, nextTick, onMounted } from '@vue/runtime-core'
 import useEmitter from './useEmitter.js'
 // import handleModule from './handleModule.js'
 import setExecProcedure from './setExecProcedure.js'
+import showError from './showError.js'
 
 export default {
     setup() {
@@ -27,7 +28,7 @@ export default {
 
         const emitter = useEmitter()
         let df = internalInstance.appContext.config.globalProperties.$df.value;
-        const variables = internalInstance.appContext.config.globalProperties.$variables
+
 
 
         onMounted(async () => {
@@ -54,35 +55,38 @@ export default {
 
         function executeNode() {
 
-            if (!isNaN(assignName.value)) {
-                alert(`Variable name can't be a number at Node ${nodeId.value}`)
+            if (!isNaN(assignName.value) || assignName.value === undefined) {
+                showError(`A variable name can't be a number. Please specify a set of characters, not only numbers at Node ${nodeId.value}`)
                 return;
             }
-            const moduleName = df.getModuleFromNodeId(nodeId.value)
+
+            try
+
+            {
+                const moduleName = df.getModuleFromNodeId(nodeId.value)
+
+                nodeData.value = df.getNodeFromId(nodeId.value)
+                const connectedNode = df.getNodeFromId(nodeData.value.inputs.input_1.connections[0].node)
+
+
+                assignValue.value = connectedNode.data.result
 
 
 
+                nodeData.value.data.name = assignName.value
+                nodeData.value.data.value = assignValue.value
+                nodeData.value.data.pythoncode = `${assignName.value} = ${connectedNode.data.pythoncode}\n`
 
-            nodeData.value = df.getNodeFromId(nodeId.value)
-            const connectedNode = df.getNodeFromId(nodeData.value.inputs.input_1.connections[0].node)
-            const scopeVariables = variables[moduleName]
 
-
-            assignValue.value = connectedNode.data.result
-
-            if (scopeVariables === undefined) {
-                variables[moduleName] = {}
+                df.updateNodeDataFromId(nodeId.value, nodeData.value.data)
             }
-
-            variables[moduleName][assignName.value] = assignValue.value
-
-
-            nodeData.value.data.name = assignName.value
-            nodeData.value.data.value = assignValue.value
-            nodeData.value.data.pythoncode = `${assignName.value} = ${connectedNode.data.pythoncode}\n`
-
-
-            df.updateNodeDataFromId(nodeId.value, nodeData.value.data)
+            catch
+            {
+                setTimeout(() => {
+                    showError(`Please, connect the assignNode input to another node at Node ${nodeId.value}`)
+                },200)
+            }
+            
         }
 
 

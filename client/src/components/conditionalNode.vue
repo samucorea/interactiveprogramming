@@ -18,9 +18,12 @@
 
 <script>
 import { defineComponent, nextTick, onMounted,ref,getCurrentInstance, readonly} from 'vue'
+import 'element-plus/dist/index.css'
 // import handleModule from './handleModule.js';
 import setExecProcedure from './setExecProcedure.js';
+import { ElMessage } from 'element-plus';
 import useEmitter from './useEmitter.js';
+import showError from './showError.js';
 
 
 export default defineComponent({
@@ -96,13 +99,17 @@ export default defineComponent({
             }
             catch
             {
-                alert(`All conditionalNode inputs should be connected at Node ${nodeId.value}`)
+                setTimeout(() => {
+                    showError(`All conditional node inputs should be connected at Node ${nodeId.value}`)
+                },500)
             }
 
             if(logicOperator.value === undefined)
             {
-                logicOperator.value = 'Equal than'
-                alert(`Logic operator should be specified at node ${nodeId.value}`)
+                 setTimeout(() => {
+                    showError(`Logic operator should be specified in conditional node  at Node ${nodeId.value}`)
+                },500)
+                
             }
             else
             {
