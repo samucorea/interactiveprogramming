@@ -11,13 +11,7 @@
 <script>
     import { ref } from "@vue/reactivity"
 import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
-import setExecProcedure from './setExecProcedure';
-import useEmitter from './useEmitter';
 import showError from './showError';
-
-
-
-
 
     export default {
         name: 'numberNode',
@@ -26,7 +20,7 @@ import showError from './showError';
             const nodeId = ref(0)
             const result = ref(0)
             const nodeData = ref({})
-            const emitter = useEmitter()
+
         
             
             let df = getCurrentInstance().appContext.config.globalProperties.$df.value;
@@ -39,7 +33,7 @@ import showError from './showError';
                nodeData.value = df.getNodeFromId(nodeId.value)
                result.value = nodeData.value.data.result
 
-                setExecProcedure(emitter,executeNode,df,nodeData.value)
+
 
               
                
@@ -47,25 +41,17 @@ import showError from './showError';
            })
 
            const handleChange = () => {
+               
+               if(isNaN(result.value))
+               {
+                   showError(`Please, insert a valid number at Node ${nodeId.value}`)
+               }
                nodeData.value.data.result = parseInt(result.value)
                nodeData.value.data.pythoncode = `${result.value}`
                
                
                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
                
-           }
-
-           function executeNode()
-           {
-               if(isNaN(result.value))
-               {
-                 result.value = 0
-                 handleChange()
-                 setTimeout(() => {
-                     showError(`Please, specify a number at the number Node ${nodeId.value}`)
-                 },200)
-                 
-               }
            }
 
 

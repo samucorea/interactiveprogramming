@@ -1,4 +1,6 @@
-export default function getPythonCode(modules, moduleSelected, prefix = '') {
+import convertToCode from "../functions/convertToCodeFunctions"
+
+export default function getPythonCode(modules, moduleSelected, prefix = '', df) {
     let code = ''
     const nodes = modules[moduleSelected].data
 
@@ -7,6 +9,8 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
     }
     const nodesarr = []
     Object.keys(nodes).forEach(id => {
+        convertToCode(nodes[id].name, nodes[id], df)
+
         nodesarr.push(nodes[id])
 
 
@@ -45,8 +49,8 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
         else if (element.name === 'conditionalNode') {
 
 
-            const mainBlockCode = getPythonCode(modules, `conditional-main-block-${element.id}`, prefix + '    ')
-            const elseBlockCode = getPythonCode(modules, `conditional-else-block-${element.id}`, prefix + '    ')
+            const mainBlockCode = getPythonCode(modules, `conditional-main-block-${element.id}`, prefix + '    ', df)
+            const elseBlockCode = getPythonCode(modules, `conditional-else-block-${element.id}`, prefix + '    ', df)
 
             let conditionalCodeBlock = prefix + element.data.pythoncode
             if (mainBlockCode === '') {
@@ -70,7 +74,7 @@ export default function getPythonCode(modules, moduleSelected, prefix = '') {
         }
 
         else if (element.name === 'loopNode') {
-            const loopBlock = getPythonCode(modules, `loop-${element.id}`, prefix + '    ')
+            const loopBlock = getPythonCode(modules, `loop-${element.id}`, prefix + '    ', df)
 
             code = prefix + element.data.pythoncode + loopBlock + code
         }

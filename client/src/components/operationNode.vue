@@ -3,7 +3,7 @@
         <div>Node {{nodeId}}</div>
         <div>Operation node</div>
         <div style="margin-bottom:10px;">
-            <el-select size="small" v-model="binaryOp">
+            <el-select @change="handleChange" df-binaryop size="small" v-model="binaryOp">
             <el-option value="+">Sum</el-option>
             <el-option value="-">Substract</el-option>
             <el-option value="*">Multiply</el-option>
@@ -16,15 +16,12 @@
 
 <script>
 import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
-import useEmitter from './useEmitter.js';
-// import handleModule from './handleModule.js';
-import setExecProcedure from './setExecProcedure.js';
 import showError from './showError.js';
+
     export default{
 
         setup()
         {
-            const emitter = useEmitter()
             const root = ref(null);
             const nodeId = ref(0)
             const binaryOp = ref('+')
@@ -40,15 +37,11 @@ import showError from './showError.js';
                 
                 nodeId.value = root.value.parentElement.parentElement.id.slice(5)
                 nodeData.value = df.getNodeFromId(nodeId.value)
-                result.value = nodeData.value.data.result
-              
-                
-                setExecProcedure(emitter,executeNode,df,nodeData.value)
 
-                
-              
-               
-                    
+                result.value = nodeData.value.data.result
+                binaryOp.value = nodeData.value.data.binaryop
+
+
                     
                 })
 
@@ -116,13 +109,18 @@ import showError from './showError.js';
                         df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
             }
                 
-            
+            function handleChange()
+            {
+                nodeData.value.data.binaryop = binaryOp.value
+                df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
+            }
 
             return {
                 result,
                 root,
                 binaryOp,
-                nodeId
+                nodeId,
+                handleChange
             }
         }
         

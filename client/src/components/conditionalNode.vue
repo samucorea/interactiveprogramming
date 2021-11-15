@@ -20,27 +20,20 @@
 import { defineComponent, nextTick, onMounted,ref,getCurrentInstance, readonly} from 'vue'
 import 'element-plus/dist/index.css'
 // import handleModule from './handleModule.js';
-import setExecProcedure from './setExecProcedure.js';
-import { ElMessage } from 'element-plus';
-import useEmitter from './useEmitter.js';
-import showError from './showError.js';
+
 
 
 export default defineComponent({
     setup() {
        
         const root = ref(null);
-        const logicDict = readonly({
-            'Greater than' : '>',
-            'Lesser than' : '<',
-            'Equal than' : '=='
-        })
+       
         const nodeId = ref(0);
         const nodeData = ref({})
         const conditionMet = ref(null)
         const logicOperator = ref('')
        
-        const emitter = useEmitter()
+
         let df = getCurrentInstance().appContext.config.globalProperties.$df.value
 
         onMounted(async () => {
@@ -58,7 +51,6 @@ export default defineComponent({
                 df.addModule(`conditional-else-block-${nodeId.value}`)
             }
 
-            setExecProcedure(emitter,executeNode,df,nodeData.value)
 
             
 
@@ -76,66 +68,6 @@ export default defineComponent({
         function handleOptionChange()
         {
             nodeData.value.data.logicOperator = logicOperator.value
-            df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
-        }
-
-        function executeNode()
-        {
-           
-            nodeData.value = df.getNodeFromId(nodeId.value)
-            const comparisonValues = []
-            const comparisonItemExpressions = []
-            try
-            {
-                Object.keys(nodeData.value.inputs).forEach(key => {
-                const nodeConnectedId = nodeData.value.inputs[key].connections[0].node
-                const nodeConnected = df.getNodeFromId(nodeConnectedId)
-
-              
-                comparisonItemExpressions.push(nodeConnected.data.pythoncode)
-                comparisonValues.push(nodeConnected.data.result)
-
-                })
-            }
-            catch
-            {
-                setTimeout(() => {
-                    showError(`All conditional node inputs should be connected at Node ${nodeId.value}`)
-                },500)
-            }
-
-            if(logicOperator.value === undefined)
-            {
-                 setTimeout(() => {
-                    showError(`Logic operator should be specified in conditional node  at Node ${nodeId.value}`)
-                },500)
-                
-            }
-            else
-            {
-                switch(logicOperator.value)
-                {
-                    case 'Greater than':
-                        conditionMet.value = comparisonValues[0] > comparisonValues[1]
-                    break;
-                    case 'Lesser than':
-                        conditionMet.value = comparisonValues[0] < comparisonValues[1]
-                    break;
-                    case 'Equal than':
-                        conditionMet.value = comparisonValues[0] === comparisonValues[1]
-                    break;
-                }
-            }
-                    
-            
-            
-
-            
-            
-            nodeData.value.data.terms = [comparisonItemExpressions[0],logicDict[logicOperator.value],comparisonItemExpressions[1]]
-            nodeData.value.data.pythoncode = `if ${comparisonItemExpressions[0]} ${logicDict[logicOperator.value]} ${comparisonItemExpressions[1]}:\n`
-            nodeData.value.data.conditionMet = conditionMet.value
-
             df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
         }
 

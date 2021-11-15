@@ -9,7 +9,6 @@
   "dependencies": {
     "drawflow": "^0.0.53",
     "element-plus": "^1.2.0-beta.3",
-    "mitt": "^3.0.0",
     "vue": "^3.2.16"
   },
   "devDependencies": {

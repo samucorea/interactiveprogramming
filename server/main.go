@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -29,6 +28,8 @@ func main() {
 		rw.Write([]byte("Hello world"))
 	})
 
-	fmt.Println("Listening at port 8000...")
-	http.ListenAndServe(":8000", r)
+	r.Mount("/diagrams", diagramsResource{}.Routes())
+
+	log.Printf("Listening at port %s...", port)
+	http.ListenAndServe(":"+port, r)
 }

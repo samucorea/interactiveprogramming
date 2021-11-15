@@ -102,8 +102,6 @@ import getPythonCode from './getPythonCode.js'
 import DrawFlow from 'drawflow'
 //eslint-disable-next-line
 import styleDrawflow from "drawflow/dist/drawflow.min.css";
-import useEmitter from './useEmitter.js'
-
 
 export default {
     name:'drawflow',
@@ -155,7 +153,6 @@ export default {
         const pythonCode = ref('')
         const internalInstance = getCurrentInstance();
         const currentModule = ref('Home')
-        const emitter = useEmitter()
         
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
         function addNodeToDrawFlow(name, pos_x, pos_y) {
@@ -224,19 +221,13 @@ export default {
                 
                 
                 codeDrawer.value = true
-                
-                emitter.emit('execute-nodes',currentModule.value)
-
-                setTimeout(() => {
-                    emitter.all.clear()
+                if(currentModule.value !== 'Home')
+                {
                     editor.value.changeModule('Home')
-                },0)
-               
-                editor.value.on('moduleChanged', () => {
-                    console.log(emitter)
-                })
+                }
+           
                 const df = editor.value.export()
-                pythonCode.value = getPythonCode(df.drawflow,'Home')
+                pythonCode.value = getPythonCode(df.drawflow,'Home','',editor.value)
            
           
         }
