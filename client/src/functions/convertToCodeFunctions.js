@@ -159,12 +159,14 @@ function conditionalNodeToCode(node, df) {
         setTimeout(() => {
             showError(`All conditional node inputs should be connected at Node ${node.id}`)
         }, 200)
+        return
     }
 
     if (data.logicOperator === undefined) {
         setTimeout(() => {
             showError(`Logic operator should be specified in conditional node  at Node ${node.id}`)
         }, 200)
+        return
 
     }
 

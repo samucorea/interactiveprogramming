@@ -3,12 +3,12 @@
         <el-header height="100px" class="header">
          
         <h1>Interactive programming</h1>
-        <h3>{{currentModule}}</h3>
+         <h3>{{currentModule}}</h3>
         
         
         </el-header>
         <el-container class="container">
-          
+           
             <el-aside width="250px" >
                 <div class="tools">
 
@@ -60,6 +60,15 @@
                         <code>
                              {{pythonCode}}
                         </code>
+                        <div>
+                            <el-button @click="executeCode" type="primary">Execute code</el-button>
+                        </div>
+                        <div>
+                            <code>
+                                <h4>Output:</h4>
+                                <div>{{codeResponse ? codeResponse : "(empty)"}}</div>
+                            </code>
+                        </div>
                     </p>
                 </div>
                 </el-main>
@@ -70,6 +79,7 @@
         </el-container>
 
          <el-footer>
+             <el-button @click="saveDiagram" type="primary">Save</el-button>
              <el-button type="info" @click="savedDiagramsDrawer = true">Open saved diagrams</el-button>
               <el-button v-if="currentModule !== 'Home'" type="success" @click="returnHomeModule">Return main block</el-button>
               <el-button type="primary" @click="exportNodes">Generate python code</el-button>
@@ -153,6 +163,7 @@ export default {
         const pythonCode = ref('')
         const internalInstance = getCurrentInstance();
         const currentModule = ref('Home')
+        const codeResponse = ref('')
         
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
         function addNodeToDrawFlow(name, pos_x, pos_y) {
@@ -232,6 +243,41 @@ export default {
           
         }
 
+        function executeCode()
+        {
+            fetch('http://localhost:9000/diagrams/execute',{
+                method:'POST',
+                body: pythonCode.value
+            }).then(response => response.text())
+            .then(text => {
+                
+                if(text.startsWith("Traceback"))
+                {
+                    
+                    codeResponse.value = 'Oops! Something went wrong with your code. Check for use of variables before declaration'
+                }
+                else
+                {
+                    codeResponse.value = text
+                }
+                
+            })
+        }
+
+        function saveDiagram()
+        {
+            const exportedJson = JSON.stringify(editor.value.export())
+            fetch('http://localhost:9000/diagrams/',{
+                method:'POST',
+                body: JSON.stringify({
+                    uid:"_:diagram",
+                    exportedjson: exportedJson,
+                    "dgraph.type": "Diagram"
+                })
+            })
+
+        }
+
   
         onMounted(() => {
           
@@ -273,14 +319,6 @@ export default {
                 currentModule.value = name
             })
 
-        
-
-          
-            
-
-            
-            
-
 
         })
 
@@ -294,7 +332,10 @@ export default {
             savedDiagramsDrawer,
             pythonCode,
             codeDrawer,
-            currentModule
+            currentModule,
+            executeCode,
+            codeResponse,
+            saveDiagram
          
         }
     }
@@ -326,7 +367,7 @@ export default {
     }
 
     .container{
-        min-height:calc(90vh - 100px);
+        min-height:calc(95vh - 100px);
     }
     .main{
         overflow:hidden;
