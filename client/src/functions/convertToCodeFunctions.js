@@ -25,6 +25,10 @@ export default function convertToCode(nodeName, node, df) {
 
     case "PrintNode":
       printNodeToCode(node, df);
+      break;
+    case "UseVariableNode":
+      useVariableNodeToCode(node, df);
+      break;
   }
 }
 
@@ -33,8 +37,6 @@ function numberNodeToCode(node, df) {
     node.data.result = 0;
     df.updateNodeDataFromId(node.id, node.data);
     showError(`Please, specify a number at the number Node ${node.id}`);
-  } else {
-    return node.data.result.toString();
   }
 }
 
@@ -176,7 +178,7 @@ function printNodeToCode(node, df) {
 
     data.pythoncode = `print(${connectedNode.data.pythoncode})\n`;
   } else {
-    showError(`Print node should have input connected at Node ${nodeId.value}`);
+    showError(`Print node should have input connected at Node ${node.id}`);
     data.pythoncode = `print()\n`;
   }
   df.updateNodeDataFromId(node.id, data);

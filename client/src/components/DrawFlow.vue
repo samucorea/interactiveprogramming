@@ -460,7 +460,9 @@ ul.program-list > li {
 .container {
   min-height: 75vh;
 }
-
+.main {
+  overflow-y: hidden;
+}
 #drawflow {
   border: 1px solid black;
   height: 100%;

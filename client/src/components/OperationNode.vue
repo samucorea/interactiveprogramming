@@ -15,7 +15,7 @@
         <el-option value="/">Divide</el-option>
       </el-select>
     </div>
-    <span>{{ result }}</span>
+    <span df-result>{{ result }}</span>
   </div>
 </template>
 
