@@ -29,6 +29,13 @@ export default defineComponent({
     props: {
         listDiagrams: {
             type: Array
+        },
+       
+        editor: {
+            type:Object
+        },
+        currentDiagramOpen: {
+            type: Object
         }
     },
     setup(props, {emit}){

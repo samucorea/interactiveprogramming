@@ -34,7 +34,7 @@ func (rs Db) insert(json []byte, ctx context.Context) (*api.Response, error) {
 
 }
 
-func (rs Db) getAll(ctx context.Context) []byte {
+func (rs Db) getAll(ctx context.Context) (*api.Response, error) {
 	txn := rs.dGraphClient.NewTxn()
 	defer txn.Commit(ctx)
 
@@ -51,14 +51,14 @@ func (rs Db) getAll(ctx context.Context) []byte {
 	res, err := txn.Query(ctx, query)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
-	return res.Json
+	return res, err
 
 }
 
-func (rs Db) getById(uid string, ctx context.Context) []byte {
+func (rs Db) getById(uid string, ctx context.Context) (*api.Response, error) {
 	txn := rs.dGraphClient.NewTxn()
 	defer txn.Commit(ctx)
 
@@ -71,11 +71,12 @@ func (rs Db) getById(uid string, ctx context.Context) []byte {
 	  }`
 
 	res, err := txn.QueryWithVars(ctx, q, map[string]string{"$uid": uid})
+
 	if err != nil {
 		log.Println(err)
 	}
 
-	return res.Json
+	return res, err
 }
 
 func (rs Db) delete(json []byte, ctx context.Context) (*api.Response, error) {

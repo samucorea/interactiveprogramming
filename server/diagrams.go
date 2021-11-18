@@ -22,6 +22,11 @@ type Diagram struct {
 	DType        string `json:"dgraph.type,omitempty"`
 }
 
+type Error struct {
+	ErrorCode   int    `json:"errorcode"`
+	Description string `json:"description"`
+}
+
 type diagramsResource struct{}
 
 func (rs diagramsResource) Routes(conn *grpc.ClientConn) chi.Router {
@@ -52,9 +57,15 @@ func DiagramCtx(next http.Handler) http.Handler {
 func (rs diagramsResource) List(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	allDiagrams := db.getAll(r.Context())
+	res, err := db.getAll(r.Context())
 
-	w.Write(allDiagrams)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+
+		return
+	}
+
+	w.Write(res.Json)
 }
 
 func (rs diagramsResource) Create(w http.ResponseWriter, r *http.Request) {
@@ -76,6 +87,11 @@ func (rs diagramsResource) Create(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		msg := &Error{ErrorCode: http.StatusBadRequest, Description: err.Error()}
+
+		json.NewEncoder(w).Encode(msg)
+		return
 	}
 
 	json, _ := json.Marshal(res)
@@ -95,6 +111,10 @@ func (rs diagramsResource) Execute(w http.ResponseWriter, r *http.Request) {
 
 	if e != nil {
 		log.Fatal(e)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := &Error{ErrorCode: http.StatusInternalServerError, Description: e.Error()}
+
+		json.NewEncoder(w).Encode(msg)
 	}
 	fmt.Fprintln(file, codeToExecute)
 	file.Close()
@@ -103,7 +123,12 @@ func (rs diagramsResource) Execute(w http.ResponseWriter, r *http.Request) {
 	out, cmdErr := cmd.CombinedOutput()
 
 	if cmdErr != nil {
-		log.Print(cmdErr)
+		log.Fatal(cmdErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := &Error{ErrorCode: http.StatusInternalServerError, Description: e.Error()}
+
+		json.NewEncoder(w).Encode(msg)
+		return
 	}
 	w.Write(out)
 
@@ -114,9 +139,17 @@ func (rs diagramsResource) Get(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	diagram := db.getById(id, r.Context())
+	res, err := db.getById(id, r.Context())
 
-	w.Write(diagram)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		msg := &Error{ErrorCode: http.StatusBadRequest, Description: err.Error()}
+
+		json.NewEncoder(w).Encode(msg)
+		return
+	}
+
+	w.Write(res.Json)
 
 }
 
@@ -128,8 +161,11 @@ func (rs diagramsResource) Delete(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&d)
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := &Error{ErrorCode: http.StatusBadRequest, Description: err.Error()}
+
+		json.NewEncoder(w).Encode(msg)
+		return
 	}
 
 	pb, _ := json.Marshal(d)
@@ -137,7 +173,12 @@ func (rs diagramsResource) Delete(w http.ResponseWriter, r *http.Request) {
 	res, err := db.delete(pb, r.Context())
 
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		msg := &Error{ErrorCode: http.StatusBadRequest, Description: err.Error()}
+
+		json.NewEncoder(w).Encode(msg)
 		log.Println(err)
+		return
 	}
 
 	json, _ := json.Marshal(res)

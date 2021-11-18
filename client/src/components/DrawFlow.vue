@@ -36,7 +36,7 @@
                 direction="ltr"
                 custom-class="drawer-diagrams"
                 >
-            <programList @on-load-diagram="handleLoadDiagram" @on-delete-diagram="handleDeleteDiagram" :listDiagrams="listDiagrams"/>
+            <programList @on-load-diagram="handleLoadDiagram"  @on-delete-diagram="handleDeleteDiagram" :listDiagrams="listDiagrams"/>
             </el-drawer>
             <el-main class="main" style="overflow:hidden;">
                 <div style="display:block;position:absolute;top:9%;">
@@ -104,8 +104,6 @@ import printNode from './printNode.vue'
 import loopNode from './loopNode.vue'
 import getPythonCode from '../functions/getPythonCode'
 import programList from './programList.vue'
-
-
 import DrawFlow from 'drawflow'
 //eslint-disable-next-line
 import styleDrawflow from "drawflow/dist/drawflow.min.css";
@@ -162,9 +160,7 @@ export default {
         const codeString = ref("");
         const internalInstance = getCurrentInstance();
         const currentModule = ref("Home");
-        // const codeResponse = ref("");
         const currentDiagramOpen = ref(null)
-        const loadingCode = ref(false)
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
        
        function addNodeToDrawFlow(name, pos_x, pos_y) {
@@ -223,6 +219,7 @@ export default {
                     exportedjson: exportedJson,
                     "dgraph.type": "Diagram"
                 }
+
                 ElMessageBox.prompt('Insert name for saved program.','New program', {
                     confirmButtonText: 'Save',
                     cancelButtonText: 'Cancel',
@@ -399,7 +396,7 @@ export default {
             });
         });
 
-        
+
         return {
             listNodes,
             drag,
@@ -419,7 +416,7 @@ export default {
             currentDiagramOpen,
             handleNewDiagram,
             handleDeleteDiagram,
-            loadingCode
+            editor
         };
     },
     components: {
@@ -430,12 +427,6 @@ export default {
 </script>
 
 <style>
-    /* html{
-        overflow:hidden;
-    }
-    body{
-        overflow:hidden;
-    } */
   
     h1,h3{
         text-align:center;
@@ -458,10 +449,7 @@ export default {
     .container{
         min-height:75vh;
     }
-    /* .main{
-        position:relative;
-    } */
-   
+
     #drawflow{
         border:1px solid black;
         height:100%;

@@ -50,7 +50,7 @@ export default defineComponent({
                 }
                 loadingCode.value = false
             });
-           },3000)
+           },1500)
         }
 
         return{
