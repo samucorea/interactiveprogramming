@@ -1,1 +1,0 @@
-{"uid":"_:diagram","exportedjson":"{\"drawflow\":{\"Home\":{\"data\":{\"1\":{\"id\":1,\"name\":\"numberNode\",\"data\":{\"result\":5,\"pythoncode\":\"5\"},\"class\":\"numberNode\",\"html\":\"numberNode\",\"typenode\":\"vue\",\"inputs\":{},\"outputs\":{\"output_1\":{\"connections\":[]}},\"pos_x\":313,\"pos_y\":253}}}}}","dgraph.type":"Diagram"}

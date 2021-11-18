@@ -34,14 +34,8 @@ export default {
             nodeId.value = root.value.parentElement.parentElement.id.slice(5)
             nodeData.value = df.getNodeFromId(nodeId.value)
 
-
-
-
             assignName.value = nodeData.value.data.name
             assignValue.value = nodeData.value.data.value
-
-          //  setExecProcedure(emitter, executeNode, df, nodeData.value)
-
 
         })
         function handleChange()

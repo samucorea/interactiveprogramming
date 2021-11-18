@@ -2,7 +2,7 @@
     <div  ref="root">
         <div>Node {{nodeId}}</div>
         <div>Conditional node</div>
-        <div style="margin-bottom:10px;">
+        <div style="selectorLogicOp">
             <select @change="handleOptionChange" v-model="logicOperator">
             <option value="Greater than">Greater than</option>
             <option value="Lesser than">Lesser than</option>
@@ -86,16 +86,8 @@ export default defineComponent({
 
 <style scoped>
 
-    .static{
-        padding:20px;
-        background-color:none;
-    }
-    .isFalse{
-        background-color:red;
-    }
-
-    .isTrue{
-        background-color:green;
+    .selectorLogicOp{
+        margin-bottom:10px;
     }
 
 </style>
