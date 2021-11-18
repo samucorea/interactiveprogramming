@@ -62,23 +62,7 @@
             <el-container>
               
                 <el-main>
-                    <div>
-                    <p style="text-align:justify;white-space:pre-wrap; font-size:16px;">
-                        <code>
-                             {{pythonCode}}
-                        </code>
-                        <div>
-                            <el-button @click="executeCode" type="primary">Execute code</el-button>
-                        </div>
-                        <div v-loading="loadingCode">
-                            <code>
-                                <h4>Output:</h4>
-                                <div>{{codeResponse ? codeResponse : "(empty)"}}</div>
-                            </code>
-                        </div>
-                        
-                    </p>
-                </div>
+                    <codeExecuter :code="codeString" />
                 </el-main>
             </el-container>
             </el-drawer>
@@ -118,7 +102,7 @@ import conditionalNode from './conditionalNode.vue'
 import useVariable from './useVariable.vue'
 import printNode from './printNode.vue'
 import loopNode from './loopNode.vue'
-import getPythonCode from './getPythonCode.js'
+import getPythonCode from '../functions/getPythonCode'
 import programList from './programList.vue'
 
 
@@ -126,7 +110,8 @@ import DrawFlow from 'drawflow'
 //eslint-disable-next-line
 import styleDrawflow from "drawflow/dist/drawflow.min.css";
 import { ElMessage, ElMessageBox } from 'element-plus'
-import showError from './showError'
+import showError from '../functions/showError'
+import codeExecuter from './codeExecuter.vue'
 
 
 export default {
@@ -174,10 +159,10 @@ export default {
         const savedDiagramsDrawer = ref(false);
         const codeDrawer = ref(false);
         const Vue = { version: 3, h, render };
-        const pythonCode = ref("");
+        const codeString = ref("");
         const internalInstance = getCurrentInstance();
         const currentModule = ref("Home");
-        const codeResponse = ref("");
+        // const codeResponse = ref("");
         const currentDiagramOpen = ref(null)
         const loadingCode = ref(false)
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
@@ -200,48 +185,34 @@ export default {
             const nodeSelected = listNodes.find((ele) => ele.item == name);
             editor.value.addNode(name, nodeSelected.input, nodeSelected.output, pos_x, pos_y, name, {}, name, "vue");
         }
+        
         function drag(ev) {
             ev.dataTransfer.setData("node", ev.target.getAttribute("data-node"));
         }
+
         function drop(ev) {
             ev.preventDefault();
             var data = ev.dataTransfer.getData("node");
             addNodeToDrawFlow(data, ev.clientX, ev.clientY);
         }
+
         function allowDrop(ev) {
             ev.preventDefault();
         }
+
         function returnHomeModule() {
             editor.value.changeModule("Home");
         }
+
         function exportNodes() {
             codeDrawer.value = true;
             if (currentModule.value !== "Home") {
                 editor.value.changeModule("Home");
             }
             const df = editor.value.export();
-            pythonCode.value = getPythonCode(df.drawflow, "Home", "", editor.value);
+            codeString.value = getPythonCode(df.drawflow, "Home", "", editor.value);
         }
-        function executeCode() {
-            loadingCode.value = true
 
-           setTimeout(() => {
-                fetch("http://localhost:9000/diagrams/execute", {
-                method: "POST",
-                body: pythonCode.value
-            }).then(response => response.text())
-                .then(text => {
-                    
-                if (text.startsWith("Traceback")) {
-                    codeResponse.value = "Oops! Something went wrong with your code. Check for use of variables before declaration";
-                }
-                else {
-                    codeResponse.value = text;
-                }
-                loadingCode.value = false
-            });
-           },3000)
-        }
         function saveDiagram() {
            const exportedJson = JSON.stringify(editor.value.export());
             if(currentDiagramOpen.value === null)
@@ -427,6 +398,8 @@ export default {
                 listDiagrams.value = diagrams;
             });
         });
+
+        
         return {
             listNodes,
             drag,
@@ -435,11 +408,9 @@ export default {
             returnHomeModule,
             exportNodes,
             savedDiagramsDrawer,
-            pythonCode,
+            codeString,
             codeDrawer,
             currentModule,
-            executeCode,
-            codeResponse,
             saveDiagram,
             listDiagrams,
             savedDiagramsDrawer,
@@ -452,7 +423,8 @@ export default {
         };
     },
     components: {
-        programList
+        programList,
+        codeExecuter
     }
 }
 </script>

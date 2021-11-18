@@ -11,7 +11,8 @@
 <script>
     import { ref } from "@vue/reactivity"
 import { getCurrentInstance,  nextTick, onMounted } from "@vue/runtime-core"
-import showError from './showError';
+import showError from "../functions/showError";
+
 
     export default {
         name: 'numberNode',
@@ -32,11 +33,6 @@ import showError from './showError';
                nodeId.value = root.value.parentElement.parentElement.id.slice(5)
                nodeData.value = df.getNodeFromId(nodeId.value)
                result.value = nodeData.value.data.result
-
-
-
-              
-               
                
            })
 

@@ -1,4 +1,4 @@
-import convertToCode from "../functions/convertToCodeFunctions"
+import convertToCode from "./convertToCodeFunctions"
 
 export default function getPythonCode(modules, moduleSelected, prefix = '', df) {
     let code = ''

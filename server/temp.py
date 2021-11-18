@@ -1,2 +1,3 @@
-print(123)
+a = 5
+print(a)
 

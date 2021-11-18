@@ -1,4 +1,4 @@
-import showError from '../components/showError'
+import showError from './showError'
 import { readonly } from 'vue'
 
 export default function convertToCode(nodeName, node, df) {

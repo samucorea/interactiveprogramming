@@ -16,7 +16,7 @@
 
 <script>
 import { getCurrentInstance, nextTick, onMounted, ref } from '@vue/runtime-core'
-import showError from './showError.js';
+
 
     export default{
 
@@ -45,70 +45,6 @@ import showError from './showError.js';
                     
                 })
 
-            function executeNode()
-            {
-                    
-                    result.value = 0
-                    nodeData.value = df.getNodeFromId(nodeId.value)
-
-                    if(nodeData.value === undefined)
-                    {
-                        return;
-                    }
-                    const numbersInOperation = []
-                    const expressionsInOperation = []
-                    const inputs = nodeData.value.inputs
-                
-                    try
-                    {
-                        Object.keys(inputs).forEach(key => {
-
-                       
-
-                             const input = inputs[key]
-                            const connection = input.connections[0]
-                       
-                            const currentNode = df.getNodeFromId(connection.node)
-
-                        
-
-                            numbersInOperation.push(currentNode.data.result)
-                            expressionsInOperation.push(currentNode.data.pythoncode)
-                        
-                       
-                       
-                    })
-                    }
-                    catch
-                    {
-                        setTimeout(()=> {
-                            showError(`All operation node inputs should be connected at Node ${nodeId.value}`)
-                        },0)
-                    }
-                    
-                      switch(binaryOp.value)
-                        {
-
-                            case '+':
-                                result.value = numbersInOperation[0] + numbersInOperation[1]
-                            break;
-                            case '-':
-                                result.value -= numbersInOperation[0] - numbersInOperation[1]
-                            break;
-                            case '*':
-                                result.value = numbersInOperation[0] * numbersInOperation[1]
-                            break;
-                            case '/':
-                                result.value = numbersInOperation[0] / numbersInOperation[1]
-                            break;
-
-                        }
-                        
-                        nodeData.value.data.result = result.value
-                        nodeData.value.data.pythoncode = `${expressionsInOperation[0]} ${binaryOp.value} ${expressionsInOperation[1]}`
-                        df.updateNodeDataFromId(nodeId.value,nodeData.value.data)
-            }
-                
             function handleChange()
             {
                 nodeData.value.data.binaryop = binaryOp.value
