@@ -12,6 +12,8 @@ import (
 	"github.com/go-chi/chi/middleware"
 )
 
+var db Db
+
 func main() {
 	port := "9000"
 
@@ -26,6 +28,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	db = *newClient(conn)
 
 	defer conn.Close()
 

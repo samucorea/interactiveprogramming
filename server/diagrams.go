@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"os/exec"
@@ -10,16 +11,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/dgraph-io/dgo/v2"
-	"github.com/dgraph-io/dgo/v2/protos/api"
 	"github.com/go-chi/chi"
 	"google.golang.org/grpc"
 )
 
-var dgraphClient *dgo.Dgraph
-
 type Diagram struct {
 	Uid          string `json:"uid,omitempty"`
+	Name         string `json:"name,omitempty"`
 	ExportedJson string `json:"exportedjson,omitempty"`
 	DType        string `json:"dgraph.type,omitempty"`
 }
@@ -28,51 +26,52 @@ type diagramsResource struct{}
 
 func (rs diagramsResource) Routes(conn *grpc.ClientConn) chi.Router {
 
-	dgraphClient = dgo.NewDgraphClient(api.NewDgraphClient(conn))
-
 	r := chi.NewRouter()
 
 	r.Get("/", rs.List)
 	r.Post("/", rs.Create)
 	r.Post("/execute", rs.Execute)
 
+	r.Route("/{uid}", func(r chi.Router) {
+		r.Use(DiagramCtx)
+		r.Get("/", rs.Get)
+	})
+
 	return r
 }
 
+func DiagramCtx(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), "uid", chi.URLParam(r, "uid"))
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
 func (rs diagramsResource) List(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("hello get all"))
+	w.Header().Set("Content-Type", "application/json")
+
+	allDiagrams := db.getAll(r.Context())
+
+	w.Write(allDiagrams)
 }
 
 func (rs diagramsResource) Create(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	txn := dgraphClient.NewTxn()
-	defer txn.Commit(r.Context())
 
+	w.Header().Set("Content-Type", "application/json")
 	var d Diagram
 
 	err := json.NewDecoder(r.Body).Decode(&d)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
-	pb, err := json.Marshal(d)
+	pb, _ := json.Marshal(d)
+
+	res, err := db.insert(pb, r.Context())
 
 	if err != nil {
-		log.Fatal(err)
-	}
-
-	mu := &api.Mutation{
-		SetJson: pb,
-	}
-
-	res, err := txn.Mutate(r.Context(), mu)
-
-	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	json, _ := json.Marshal(res)
@@ -102,6 +101,17 @@ func (rs diagramsResource) Execute(w http.ResponseWriter, r *http.Request) {
 	if cmdErr != nil {
 		log.Print(cmdErr)
 	}
-	w.Write([]byte(string(out)))
+	w.Write(out)
+
+}
+
+func (rs diagramsResource) Get(w http.ResponseWriter, r *http.Request) {
+	id := r.Context().Value("uid").(string)
+
+	w.Header().Set("Content-Type", "application/json")
+
+	diagram := db.getById(id, r.Context())
+
+	w.Write(diagram)
 
 }
