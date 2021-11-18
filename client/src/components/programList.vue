@@ -3,16 +3,27 @@
     class="program-list">
         <li class="item"
         v-for="diagram in listDiagrams"
-        :key="diagram.uid"                       
+        :key="diagram.uid"
+         @mouseenter="shown = diagram.uid" 
+         @mouseleave="shown = diagram.uid"                     
         >
         <div>{{diagram.name}}</div>
-        <div><el-button @click="handleClickLoad(diagram.uid)" type="primary">Load</el-button></div>
+        <div>
+            <transition name="fade">
+                <div>
+                    <el-button v-if="shown === diagram.uid" @click="handleClickLoad(diagram.uid)" type="primary">Load</el-button>
+                <el-button v-if="shown === diagram.uid" @click="handleClickDelete(diagram)" type="danger">Delete</el-button>
+                </div>
+            </transition>
+
+        
+        </div>
         </li>
     </ul>
 </template>
 
 <script>
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent, ref } from "@vue/runtime-core";
 
 export default defineComponent({
     props: {
@@ -22,12 +33,22 @@ export default defineComponent({
     },
     setup(props, {emit}){
         
-        return{
-            handleClickLoad
-        }
+        const shown = ref('')
+       
         function handleClickLoad(uid)
         {
             emit('on-load-diagram',uid)
+        }
+
+        function handleClickDelete(diagram)
+        {
+            emit('on-delete-diagram',diagram)
+        }
+
+         return{
+            handleClickLoad,
+            handleClickDelete,
+            shown
         }
     }
     

@@ -77,3 +77,16 @@ func (rs Db) getById(uid string, ctx context.Context) []byte {
 
 	return res.Json
 }
+
+func (rs Db) delete(json []byte, ctx context.Context) (*api.Response, error) {
+	txn := rs.dGraphClient.NewTxn()
+	defer txn.Commit(ctx)
+
+	mu := &api.Mutation{
+		DeleteJson: json,
+	}
+
+	res, err := txn.Mutate(ctx, mu)
+
+	return res, err
+}

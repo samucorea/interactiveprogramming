@@ -31,6 +31,7 @@ func (rs diagramsResource) Routes(conn *grpc.ClientConn) chi.Router {
 	r.Get("/", rs.List)
 	r.Post("/", rs.Create)
 	r.Put("/", rs.Create)
+	r.Delete("/", rs.Delete)
 	r.Post("/execute", rs.Execute)
 
 	r.Route("/{uid}", func(r chi.Router) {
@@ -117,4 +118,28 @@ func (rs diagramsResource) Get(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(diagram)
 
+}
+
+func (rs diagramsResource) Delete(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var d Diagram
+
+	err := json.NewDecoder(r.Body).Decode(&d)
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Println(err)
+	}
+
+	pb, _ := json.Marshal(d)
+
+	res, err := db.delete(pb, r.Context())
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	json, _ := json.Marshal(res)
+	w.Write(json)
 }

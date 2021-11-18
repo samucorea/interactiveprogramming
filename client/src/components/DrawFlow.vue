@@ -36,7 +36,7 @@
                 direction="ltr"
                 custom-class="drawer-diagrams"
                 >
-            <programList @on-load-diagram="handleLoadDiagram" :listDiagrams="listDiagrams"/>
+            <programList @on-load-diagram="handleLoadDiagram" @on-delete-diagram="handleDeleteDiagram" :listDiagrams="listDiagrams"/>
             </el-drawer>
             <el-main class="main" style="overflow:hidden;">
                 <div style="display:block;position:absolute;top:9%;">
@@ -264,6 +264,12 @@ export default {
 
                         newDiagram.name = value
 
+                        if(listDiagrams.value.some(diagram => diagram.name === value))
+                        {
+                            ElMessage.info("There's already a program with that name. Try another name.")
+                            return
+                        }
+
                         fetch("http://localhost:9000/diagrams/", {
                         method: "POST",
                         headers:{
@@ -340,6 +346,48 @@ export default {
                 }
             })
         }
+
+        function handleDeleteDiagram(diagramToDel)
+        {
+
+            ElMessageBox.confirm(
+                'Program will be permanently deleted. Continue?',
+                'Warning',
+                {
+                    confirmButtonText: "Delete",
+                    cancelButtonText: "Cancel",
+                    type: 'warning',
+                    customStyle: "font-family:'Helvetica Neue', Helvetica;"
+                }
+
+            )
+            .then(() => {
+                fetch('http://localhost:9000/diagrams', {
+                    method: 'DELETE',
+                    headers:{
+                        'Content-Type' :'application/json'
+                    },
+                    body: JSON.stringify(diagramToDel)
+
+                })
+                .then(() => {
+                    ElMessage.info('Program was successfully deleted.')
+                    if(currentDiagramOpen.value !== null && currentDiagramOpen.value.uid === diagramToDel.uid)
+                    {
+                        currentDiagramOpen.value = null
+                        editor.value.clear()
+                    }
+
+                    const currentListDiagrams = listDiagrams.value
+                    listDiagrams.value = currentListDiagrams.filter(diagram => diagram.uid !== diagramToDel.uid)
+                    savedDiagramsDrawer.value = false
+                })
+                .catch((err) => {
+                    console.log(err)
+                    ElMessage.warning('There was a problem deleting your program.')
+                })
+            })
+        }
         onMounted(() => {
             const id = document.getElementById("drawflow");
             editor.value = new DrawFlow(id, Vue, internalInstance.appContext.app._context);
@@ -399,6 +447,7 @@ export default {
             handleLoadDiagram,
             currentDiagramOpen,
             handleNewDiagram,
+            handleDeleteDiagram,
             loadingCode
         };
     },
