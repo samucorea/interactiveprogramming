@@ -7,7 +7,7 @@
         
         
         </el-header>
-        <el-container class="container">
+        <el-container  class="container">
            
             <el-aside width="250px" >
                 <div class="tools">
@@ -34,24 +34,24 @@
                 v-model="savedDiagramsDrawer"
                 title="Saved diagrams"
                 direction="ltr"
+                custom-class="drawer-diagrams"
                 >
             <programList @on-load-diagram="handleLoadDiagram" :listDiagrams="listDiagrams"/>
-            <!-- <ul 
-            class="program-list">
-                        <li 
-                        v-for="diagram in listDiagrams"
-                        :key="diagram.uid"
-                        
-                        >
-                        {{diagram.name}}
-                        </li>
-            </ul>     -->
             </el-drawer>
             <el-main class="main" style="overflow:hidden;">
+                <div style="display:block;position:absolute;top:9%;">
+                    <el-button @click="handleNewDiagram"  type="success">New</el-button>
+                    <el-button  @click="saveDiagram" type="primary">Save</el-button>
+                    
+                </div>
+                
                 <div 
                 id="drawflow"
                 @drop="drop($event)"
                 @dragover="allowDrop($event)"></div>
+                 <div>
+                 Current diagram open: {{currentDiagramOpen === null ? '(New Diagram)' : currentDiagramOpen.name}}
+                </div>
                 
             </el-main>
             <el-drawer 
@@ -59,7 +59,7 @@
                 title="Code generated"
                 direction="rtl"
                 >
-                   <el-container>
+            <el-container>
               
                 <el-main>
                     <div>
@@ -70,7 +70,7 @@
                         <div>
                             <el-button @click="executeCode" type="primary">Execute code</el-button>
                         </div>
-                        <div>
+                        <div v-loading="loadingCode">
                             <code>
                                 <h4>Output:</h4>
                                 <div>{{codeResponse ? codeResponse : "(empty)"}}</div>
@@ -86,11 +86,14 @@
   
         </el-container>
 
-         <el-footer>
-             <el-button @click="saveDiagram" type="primary">Save</el-button>
+         <el-footer style="display:flex;justify-content:center;align-items:center;">
+            
+             <div>
+                 
              <el-button type="info" @click="savedDiagramsDrawer = true">Open saved diagrams</el-button>
               <el-button v-if="currentModule !== 'Home'" type="success" @click="returnHomeModule">Return main block</el-button>
               <el-button type="primary" @click="exportNodes">Generate python code</el-button>
+             </div>
         </el-footer>
 
            
@@ -122,6 +125,8 @@ import programList from './programList.vue'
 import DrawFlow from 'drawflow'
 //eslint-disable-next-line
 import styleDrawflow from "drawflow/dist/drawflow.min.css";
+import { ElMessage, ElMessageBox } from 'element-plus'
+import showError from './showError'
 
 
 export default {
@@ -173,6 +178,8 @@ export default {
         const internalInstance = getCurrentInstance();
         const currentModule = ref("Home");
         const codeResponse = ref("");
+        const currentDiagramOpen = ref(null)
+        const loadingCode = ref(false)
         internalInstance.appContext.app._context.config.globalProperties.$df = editor; //Declaring draw flow editor as a global variable df to use on all components.
        
        function addNodeToDrawFlow(name, pos_x, pos_y) {
@@ -216,31 +223,105 @@ export default {
             pythonCode.value = getPythonCode(df.drawflow, "Home", "", editor.value);
         }
         function executeCode() {
-            fetch("http://localhost:9000/diagrams/execute", {
+            loadingCode.value = true
+
+           setTimeout(() => {
+                fetch("http://localhost:9000/diagrams/execute", {
                 method: "POST",
                 body: pythonCode.value
             }).then(response => response.text())
                 .then(text => {
+                    
                 if (text.startsWith("Traceback")) {
                     codeResponse.value = "Oops! Something went wrong with your code. Check for use of variables before declaration";
                 }
                 else {
                     codeResponse.value = text;
                 }
+                loadingCode.value = false
             });
+           },3000)
         }
         function saveDiagram() {
-            const exportedJson = JSON.stringify(editor.value.export());
-            fetch("http://localhost:9000/diagrams/", {
-                method: "POST",
-                body: JSON.stringify({
+           const exportedJson = JSON.stringify(editor.value.export());
+            if(currentDiagramOpen.value === null)
+            {
+                const newDiagram = {
                     uid: "_:diagram",
-                    name: `${Math.random(1, 100)}diagram`,
+                    name:  '',
+                    exportedjson: exportedJson,
+                    "dgraph.type": "Diagram"
+                }
+                ElMessageBox.prompt('Insert name for saved program.','New program', {
+                    confirmButtonText: 'Save',
+                    cancelButtonText: 'Cancel',
+                    customStyle: "font-family:'Helvetica Neue', Helvetica;",
+                    inputPattern: /^.{1,50}$/,
+                    inputErrorMessage: "You must write a name of at least 1 character"
+
+                    })
+                    .then(({value}) => {
+
+                        newDiagram.name = value
+
+                        fetch("http://localhost:9000/diagrams/", {
+                        method: "POST",
+                        headers:{
+                            'Content-Type' :'application/json'
+                        },
+                        body: JSON.stringify(newDiagram)
+
+                    }).then(response => response.json())
+                     .then(query => {
+                         ElMessage.success('Program saved successfully!')
+
+                         newDiagram.uid = query.uids.diagram
+
+                        const currentListDiagrams = listDiagrams.value
+                        currentListDiagrams.push(newDiagram)
+                        listDiagrams.value = currentListDiagrams
+
+                        currentDiagramOpen.value = newDiagram
+                     })
+                     .catch(err => {
+                        showError("Something went wrong when saving program.")
+                    });
+                })
+                    
+            }
+            else
+            {
+                fetch("http://localhost:9000/diagrams/", {
+                method: "PUT",
+                headers:{
+                    'Content-Type' :'application/json'
+                },
+                body: JSON.stringify({
+                    uid: currentDiagramOpen.value.uid ,
+                    name: currentDiagramOpen.value.name,
                     exportedjson: exportedJson,
                     "dgraph.type": "Diagram"
                 })
+            }).then(response => {
+                ElMessage.success('Program saved successfully!')
+                
+            }).catch(err => {
+                showError("Something went wrong when saving program.")
             });
+            }
+            
+          
+            
+            
         }
+
+
+        function handleNewDiagram()
+        {
+            currentDiagramOpen.value = null
+            editor.value.clear()
+        }
+
 
         function handleLoadDiagram(uid)
         {
@@ -253,6 +334,8 @@ export default {
                     const diagramFound = query.getById[0]
                     const drawflow = JSON.parse(diagramFound.exportedjson)
 
+                    savedDiagramsDrawer.value = false
+                    currentDiagramOpen.value = diagramFound
                     editor.value.import(drawflow)
                 }
             })
@@ -313,7 +396,10 @@ export default {
             listDiagrams,
             savedDiagramsDrawer,
             programList,
-            handleLoadDiagram
+            handleLoadDiagram,
+            currentDiagramOpen,
+            handleNewDiagram,
+            loadingCode
         };
     },
     components: {
@@ -330,7 +416,9 @@ export default {
         overflow:hidden;
     } */
   
-
+    h1,h3{
+        text-align:center;
+    }
     ul{
         list-style: none;
         padding:0;
@@ -347,11 +435,11 @@ export default {
     }
 
     .container{
-        min-height:calc(95vh - 100px);
+        min-height:75vh;
     }
-    .main{
-        overflow:hidden;
-    }
+    /* .main{
+        position:relative;
+    } */
    
     #drawflow{
         border:1px solid black;
@@ -365,5 +453,9 @@ export default {
         padding:2rem;
         margin:1rem;
         text-align: center;
+    }
+
+    .drawer-diagrams{
+        overflow-y: auto;
     }
 </style>

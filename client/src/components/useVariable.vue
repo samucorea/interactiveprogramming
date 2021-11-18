@@ -2,7 +2,7 @@
     <div ref="root">
         <div>Node {{nodeId}}</div>
         <div>Variable</div>
-        <el-input @change="handleChange" df-pythoncode size="small"  v-model="variableName" type="text" />
+        <el-input @change="handleChange" df-pythoncode size="small"  v-model="variableName" df-name type="text" />
        
     </div>
 </template>
