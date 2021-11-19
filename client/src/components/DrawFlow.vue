@@ -225,7 +225,7 @@ export default {
         const newDiagram = {
           uid: "_:diagram",
           name: "",
-          exportedjson: exportedJson,
+          exported_json: exportedJson,
           "dgraph.type": "Diagram",
         };
 
@@ -277,7 +277,7 @@ export default {
           body: JSON.stringify({
             uid: currentDiagramOpen.value.uid,
             name: currentDiagramOpen.value.name,
-            exportedjson: exportedJson,
+            exported_json: exportedJson,
             "dgraph.type": "Diagram",
           }),
         })
@@ -301,7 +301,7 @@ export default {
         .then((query) => {
           if (query.getById.length !== 0) {
             const diagramFound = query.getById[0];
-            const drawflow = JSON.parse(diagramFound.exportedjson);
+            const drawflow = JSON.parse(diagramFound.exported_json);
 
             savedDiagramsDrawer.value = false;
             currentDiagramOpen.value = diagramFound;

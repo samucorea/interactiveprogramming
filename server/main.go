@@ -10,9 +10,11 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/go-chi/chi/middleware"
-)
 
-var db Db
+	"github.com/samucorea/interactiveprogramming/controllers"
+
+	"github.com/samucorea/interactiveprogramming/databases"
+)
 
 func main() {
 	port := "9000"
@@ -29,7 +31,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	db = *newClient(conn)
+	databases.DgraphClient = *databases.NewClient(conn)
 
 	defer conn.Close()
 
@@ -45,7 +47,7 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	r.Mount("/diagrams", diagramsResource{}.Routes(conn))
+	r.Mount("/diagrams", controllers.DiagramsResource{}.Routes())
 
 	log.Fatal(http.ListenAndServe(":"+port, r))
 }

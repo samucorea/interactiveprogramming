@@ -1,4 +1,4 @@
-package main
+package databases
 
 import (
 	"context"
@@ -13,14 +13,16 @@ type Db struct {
 	dGraphClient *dgo.Dgraph
 }
 
-func newClient(conn *grpc.ClientConn) *Db {
+var DgraphClient Db
+
+func NewClient(conn *grpc.ClientConn) *Db {
 	db := new(Db)
 	db.dGraphClient = dgo.NewDgraphClient(api.NewDgraphClient(conn))
 
 	return db
 }
 
-func (rs Db) insert(json []byte, ctx context.Context) (*api.Response, error) {
+func (rs Db) Insert(json []byte, ctx context.Context) (*api.Response, error) {
 	txn := rs.dGraphClient.NewTxn()
 	defer txn.Commit(ctx)
 
@@ -34,7 +36,7 @@ func (rs Db) insert(json []byte, ctx context.Context) (*api.Response, error) {
 
 }
 
-func (rs Db) getAll(ctx context.Context) (*api.Response, error) {
+func (rs Db) GetAll(ctx context.Context) (*api.Response, error) {
 	txn := rs.dGraphClient.NewTxn()
 	defer txn.Commit(ctx)
 
@@ -58,7 +60,7 @@ func (rs Db) getAll(ctx context.Context) (*api.Response, error) {
 
 }
 
-func (rs Db) getById(uid string, ctx context.Context) (*api.Response, error) {
+func (rs Db) GetById(uid string, ctx context.Context) (*api.Response, error) {
 	txn := rs.dGraphClient.NewTxn()
 	defer txn.Commit(ctx)
 
@@ -79,7 +81,7 @@ func (rs Db) getById(uid string, ctx context.Context) (*api.Response, error) {
 	return res, err
 }
 
-func (rs Db) delete(json []byte, ctx context.Context) (*api.Response, error) {
+func (rs Db) Delete(json []byte, ctx context.Context) (*api.Response, error) {
 	txn := rs.dGraphClient.NewTxn()
 	defer txn.Commit(ctx)
 
