@@ -34,7 +34,7 @@
           :listDiagrams="listDiagrams"
         />
       </el-drawer>
-      <el-main class="main">
+      <el-main style="overflow: hidden" class="main">
         <div class="save-new-diagram">
           <el-button @click="handleNewDiagram" type="success">New</el-button>
           <el-button @click="saveDiagram" type="primary">Save</el-button>
@@ -212,9 +212,9 @@ export default {
 
     function exportNodes() {
       codeDrawer.value = true;
-      if (currentModule.value !== "Home") {
-        editor.value.changeModule("Home");
-      }
+
+      editor.value.changeModule("Home");
+
       const df = editor.value.export();
       codeString.value = getPythonCode(df.drawflow, "Home", "", editor.value);
     }

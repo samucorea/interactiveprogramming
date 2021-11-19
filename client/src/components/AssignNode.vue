@@ -19,8 +19,6 @@
 import { ref } from "@vue/reactivity";
 import { getCurrentInstance, nextTick, onMounted } from "@vue/runtime-core";
 
-// import handleModule from './handleModule.js'
-
 export default {
   setup() {
     const root = ref(null);

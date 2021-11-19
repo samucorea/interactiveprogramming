@@ -7,7 +7,6 @@
       df-pythoncode
       size="small"
       v-model="variableName"
-      df-name
       type="text"
     />
   </div>

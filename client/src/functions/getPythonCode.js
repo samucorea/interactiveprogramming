@@ -38,51 +38,56 @@ export default function getPythonCode(
       break;
     }
     const element = orderedNodes.pop();
-    if (element.name === "AssignNode") {
-      removeConnectedNodes(orderedNodes, element);
 
-      code = prefix + element.data.pythoncode + code;
-    } else if (element.name === "ConditionalNode") {
-      const mainBlockCode = getPythonCode(
-        modules,
-        `conditional-main-block-${element.id}`,
-        prefix + "    ",
-        df
-      );
-      const elseBlockCode = getPythonCode(
-        modules,
-        `conditional-else-block-${element.id}`,
-        prefix + "    ",
-        df
-      );
+    switch (element.name) {
+      case "AssignNode":
+        removeConnectedNodes(orderedNodes, element);
 
-      let conditionalCodeBlock = prefix + element.data.pythoncode;
-      if (mainBlockCode === "") {
-        conditionalCodeBlock += prefix + "    pass\n";
-      } else {
-        conditionalCodeBlock += mainBlockCode;
-      }
+        code = prefix + element.data.pythoncode + code;
+        break;
+      case "ConditionalNode":
+        let mainBlockCode = getPythonCode(
+          modules,
+          `conditional-main-block-${element.id}`,
+          prefix + "    ",
+          df
+        );
 
-      if (elseBlockCode !== "") {
-        conditionalCodeBlock += prefix + "else:\n" + elseBlockCode;
-      }
+        let elseBlockCode = getPythonCode(
+          modules,
+          `conditional-else-block-${element.id}`,
+          prefix + "    ",
+          df
+        );
 
-      code = conditionalCodeBlock + code;
-    } else if (element.name === "OperationNode") {
-      removeConnectedNodes(orderedNodes, element);
-      code = prefix + element.data.pythoncode + "\n" + code;
-    } else if (element.name === "LoopNode") {
-      const loopBlock = getPythonCode(
-        modules,
-        `loop-${element.id}`,
-        prefix + "    ",
-        df
-      );
+        if (mainBlockCode === "") {
+          mainBlockCode = prefix + "    pass\n";
+        }
 
-      code = prefix + element.data.pythoncode + loopBlock + code;
-    } else if (element.name === "PrintNode") {
-      removeConnectedNodes(orderedNodes, element);
-      code = prefix + element.data.pythoncode + code;
+        if (elseBlockCode !== "") {
+          elseBlockCode = prefix + "else:\n" + elseBlockCode;
+        }
+
+        code = element.data.pythoncode + mainBlockCode + elseBlockCode + code;
+        break;
+      case "OperationNode":
+        removeConnectedNodes(orderedNodes, element);
+        code = prefix + element.data.pythoncode + "\n" + code;
+        break;
+      case "LoopNode":
+        const loopBlock = getPythonCode(
+          modules,
+          `loop-${element.id}`,
+          prefix + "    ",
+          df
+        );
+
+        code = prefix + element.data.pythoncode + loopBlock + code;
+        break;
+      case "PrintNode":
+        removeConnectedNodes(orderedNodes, element);
+        code = prefix + element.data.pythoncode + code;
+        break;
     }
   }
   return code;

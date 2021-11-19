@@ -3,14 +3,18 @@
     <div>Node {{ nodeId }}</div>
     <div>Conditional node</div>
     <div style="selectorLogicOp">
-      <select @change="handleOptionChange" v-model="logicOperator">
-        <option value="Greater than">Greater than</option>
-        <option value="Lesser than">Lesser than</option>
-        <option value="Equal than">Equal than</option>
-      </select>
+      <el-select @change="handleOptionChange" v-model="logicOperator">
+        <el-option value="Greater than">Greater than</el-option>
+        <el-option value="Lesser than">Lesser than</el-option>
+        <el-option value="Equal than">Equal than</el-option>
+      </el-select>
     </div>
-    <button @click="handleClickMain">Enter main code block</button>
-    <button @click="handleClickElse">Enter else code block</button>
+    <el-button class="conditional-btn" @click="handleClickMain"
+      >Enter main code block</el-button
+    >
+    <el-button class="conditional-btn" @click="handleClickElse"
+      >Enter else code block</el-button
+    >
     <div>{{ conditionMet }}</div>
   </div>
 </template>
@@ -22,10 +26,7 @@ import {
   onMounted,
   ref,
   getCurrentInstance,
-  readonly,
 } from "vue";
-import "element-plus/dist/index.css";
-// import handleModule from './handleModule.js';
 
 export default defineComponent({
   setup() {
@@ -86,5 +87,13 @@ export default defineComponent({
 <style scoped>
 .selectorLogicOp {
   margin-bottom: 10px;
+}
+
+.conditional-btn {
+  margin-left: 0 !important;
+  padding: 1em;
+  font-size: 0.8rem;
+  width: 100%;
+  margin-top: 1em;
 }
 </style>

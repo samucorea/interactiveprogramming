@@ -1,9 +1,13 @@
 <template>
   <div ref="root">
     <div>Node {{ nodeId }}</div>
-    <div>From: <input df-from v-model="from" type="text" /></div>
-    <div>To: <input df-to v-model="to" type="text" /></div>
-    <button @click="handleClick">Enter loop code block</button>
+    <div>
+      From: <el-input size="medium" df-from v-model="from" type="text" />
+    </div>
+    <div>To: <el-input size="small" df-to v-model="to" type="text" /></div>
+    <el-button class="loop-btn" @click="handleClick"
+      >Enter loop code block</el-button
+    >
   </div>
 </template>
 
@@ -56,3 +60,13 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped>
+.loop-btn {
+  margin-left: 0 !important;
+  padding: 1em;
+  font-size: 0.8rem;
+  width: 100%;
+  margin-top: 1em;
+}
+</style>

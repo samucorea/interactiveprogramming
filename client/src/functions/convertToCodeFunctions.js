@@ -34,7 +34,7 @@ export default function convertToCode(nodeName, node, df) {
 
 function numberNodeToCode(node, df) {
   if (isNaN(node.data.result) || node.data.result === null) {
-    node.data.result = 0;
+    node.data.result = node.data.pythoncode = 0;
     df.updateNodeDataFromId(node.id, node.data);
     showError(`Please, specify a number at the number Node ${node.id}`);
   }

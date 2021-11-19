@@ -2,7 +2,12 @@
   <div ref="root">
     <div>Node {{ nodeId }}</div>
     <div>Number</div>
-    <input type="text" @change="handleChange" v-model="result" />
+    <el-input
+      size="medium"
+      type="text"
+      @change="handleChange"
+      v-model="result"
+    />
   </div>
 </template>
 
@@ -49,4 +54,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.input-number {
+  height: 20px;
+}
+</style>
