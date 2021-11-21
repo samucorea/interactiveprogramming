@@ -32,22 +32,20 @@ export default defineComponent({
     function executeCode() {
       loadingCode.value = true;
 
-      setTimeout(() => {
-        fetch("http://localhost:9000/diagrams/execute", {
-          method: "POST",
-          body: props.code,
-        })
-          .then((response) => response.text())
-          .then((text) => {
-            if (text.startsWith("Traceback")) {
-              codeResponse.value =
-                "Oops! Something went wrong with your code. Check for use of variables before declaration";
-            } else {
-              codeResponse.value = text;
-            }
-            loadingCode.value = false;
-          });
-      }, 1500);
+      fetch("http://localhost:9000/diagrams/execute", {
+        method: "POST",
+        body: props.code,
+      })
+        .then((response) => response.text())
+        .then((text) => {
+          if (text.startsWith("Traceback")) {
+            codeResponse.value =
+              "Oops! Something went wrong with your code. Check for use of variables before declaration";
+          } else {
+            codeResponse.value = text;
+          }
+          loadingCode.value = false;
+        });
     }
 
     return {

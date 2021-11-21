@@ -1,13 +1,12 @@
 <template>
   <el-container>
-    <el-header height="100px" class="header">
-      <h1>Interactive programming</h1>
+    <el-header>
       <h3>{{ currentModule }}</h3>
     </el-header>
     <el-container class="container">
       <el-aside width="250px">
         <div class="tools">
-          <ul>
+          <ul class="node-list">
             <li
               v-for="n in listNodes"
               :key="n"
@@ -22,19 +21,20 @@
           </ul>
         </div>
       </el-aside>
-      <el-drawer
-        v-model="savedDiagramsDrawer"
-        title="Saved diagrams"
-        direction="ltr"
-        custom-class="drawer-diagrams"
-      >
-        <ProgramList
-          @on-load-diagram="handleLoadDiagram"
-          @on-delete-diagram="handleDeleteDiagram"
-          :listDiagrams="listDiagrams"
-        />
-      </el-drawer>
-      <el-main style="overflow: hidden" class="main">
+
+      <el-main class="main">
+        <el-drawer
+          v-model="savedDiagramsDrawer"
+          title="Saved diagrams"
+          direction="ltr"
+          custom-class="drawer-diagrams"
+        >
+          <ProgramList
+            @on-load-diagram="handleLoadDiagram"
+            @on-delete-diagram="handleDeleteDiagram"
+            :listDiagrams="listDiagrams"
+          />
+        </el-drawer>
         <div class="save-new-diagram">
           <el-button @click="handleNewDiagram" type="success">New</el-button>
           <el-button @click="saveDiagram" type="primary">Save</el-button>
@@ -53,14 +53,14 @@
               : currentDiagramOpen.name
           }}
         </div>
+        <el-drawer v-model="codeDrawer" title="Code generated" direction="rtl">
+          <el-container>
+            <el-main>
+              <CodeExecuter :code="codeString" />
+            </el-main>
+          </el-container>
+        </el-drawer>
       </el-main>
-      <el-drawer v-model="codeDrawer" title="Code generated" direction="rtl">
-        <el-container>
-          <el-main>
-            <CodeExecuter :code="codeString" />
-          </el-main>
-        </el-container>
-      </el-drawer>
     </el-container>
 
     <el-footer
@@ -265,6 +265,7 @@ export default {
               currentDiagramOpen.value = newDiagram;
             })
             .catch((err) => {
+              console.log(err);
               showError("Something went wrong when saving program.");
             });
         });
@@ -399,9 +400,20 @@ export default {
       fetch("http://localhost:9000/diagrams")
         .then((response) => response.json())
         .then((query) => {
+          if (query.error_code) {
+            ElMessage({
+              showClose: true,
+              message:
+                "There's no connection to database. Please check your internet connection. However, you can still use the client, but can't save programs.",
+              duration: 10000,
+              type: "info",
+            });
+            throw new Error("No connection to database.");
+          }
           const diagrams = query.find_diagrams;
           listDiagrams.value = diagrams;
-        });
+        })
+        .catch((err) => {});
     });
 
     return {
@@ -438,6 +450,12 @@ h1,
 h3 {
   text-align: center;
 }
+.container {
+  height: 80vh;
+}
+ul.node-list li {
+  font-size: 1rem;
+}
 ul {
   list-style: none;
   padding: 0;
@@ -446,7 +464,8 @@ ul {
 .save-new-diagram {
   display: block;
   position: absolute;
-  top: 9%;
+  top: 6%;
+  z-index: 10;
 }
 .tools {
   display: flex;
@@ -457,11 +476,8 @@ ul.program-list > li {
   padding: 1em;
 }
 
-.container {
-  min-height: 75vh;
-}
 .main {
-  overflow-y: hidden;
+  overflow: hidden !important;
 }
 #drawflow {
   border: 1px solid black;
@@ -479,5 +495,11 @@ ul.program-list > li {
 
 .drawer-diagrams {
   overflow-y: auto;
+}
+
+@media screen and (max-width: 1550px) {
+  .node {
+    padding: 1.25rem;
+  }
 }
 </style>

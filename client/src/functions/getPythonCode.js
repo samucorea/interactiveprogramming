@@ -14,12 +14,18 @@ export default function getPythonCode(
   }
   const nodesarr = [];
   Object.keys(nodes).forEach((id) => {
-    convertToCode(nodes[id].name, nodes[id], df);
-
     nodesarr.push(nodes[id]);
   });
 
-  const filteredNodes = nodesarr.filter((node) => {
+  const orderedNodes = nodesarr.sort((a, b) => {
+    return a.pos_x > b.pos_x;
+  });
+
+  orderedNodes.forEach((node) => {
+    convertToCode(node.name, node, df);
+  });
+
+  const filteredNodes = orderedNodes.filter((node) => {
     return (
       node.name === "OperationNode" ||
       node.name === "AssignNode" ||
@@ -29,19 +35,15 @@ export default function getPythonCode(
     );
   });
 
-  const orderedNodes = filteredNodes.sort((a, b) => {
-    return a.pos_x > b.pos_x;
-  });
-
-  for (let i = orderedNodes.length - 1; i >= 0; i--) {
-    if (orderedNodes.length === 0) {
+  for (let i = filteredNodes.length - 1; i >= 0; i--) {
+    if (filteredNodes.length === 0) {
       break;
     }
-    const element = orderedNodes.pop();
+    const element = filteredNodes.pop();
 
     switch (element.name) {
       case "AssignNode":
-        removeConnectedNodes(orderedNodes, element);
+        removeConnectedNodes(filteredNodes, element);
 
         code = prefix + element.data.pythoncode + code;
         break;
@@ -68,10 +70,15 @@ export default function getPythonCode(
           elseBlockCode = prefix + "else:\n" + elseBlockCode;
         }
 
-        code = element.data.pythoncode + mainBlockCode + elseBlockCode + code;
+        code =
+          prefix +
+          element.data.pythoncode +
+          mainBlockCode +
+          elseBlockCode +
+          code;
         break;
       case "OperationNode":
-        removeConnectedNodes(orderedNodes, element);
+        removeConnectedNodes(filteredNodes, element);
         code = prefix + element.data.pythoncode + "\n" + code;
         break;
       case "LoopNode":
@@ -85,7 +92,7 @@ export default function getPythonCode(
         code = prefix + element.data.pythoncode + loopBlock + code;
         break;
       case "PrintNode":
-        removeConnectedNodes(orderedNodes, element);
+        removeConnectedNodes(filteredNodes, element);
         code = prefix + element.data.pythoncode + code;
         break;
     }
