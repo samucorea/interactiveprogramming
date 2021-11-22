@@ -215,8 +215,7 @@ export default {
 
       editor.value.changeModule("Home");
 
-      const df = editor.value.export();
-      codeString.value = getPythonCode(df.drawflow, "Home", "", editor.value);
+      codeString.value = getPythonCode(editor.value, "Home");
     }
 
     function saveDiagram() {
@@ -233,8 +232,9 @@ export default {
           confirmButtonText: "Save",
           cancelButtonText: "Cancel",
           customStyle: "font-family:'Helvetica Neue', Helvetica;",
-          inputPattern: /^.{1,50}$/,
-          inputErrorMessage: "You must write a name of at least 1 character",
+          inputPattern: /^.{1,25}$/,
+          inputErrorMessage:
+            "You must write a name of at least 1 character(25 characters max)",
         }).then(({ value }) => {
           newDiagram.name = value;
 
@@ -269,26 +269,26 @@ export default {
               showError("Something went wrong when saving program.");
             });
         });
-      } else {
-        fetch("http://localhost:9000/diagrams/", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            uid: currentDiagramOpen.value.uid,
-            name: currentDiagramOpen.value.name,
-            exported_json: exportedJson,
-            "dgraph.type": "Diagram",
-          }),
-        })
-          .then((response) => {
-            ElMessage.success("Program saved successfully!");
-          })
-          .catch((err) => {
-            showError("Something went wrong when saving program.");
-          });
+        return;
       }
+      fetch("http://localhost:9000/diagrams/", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          uid: currentDiagramOpen.value.uid,
+          name: currentDiagramOpen.value.name,
+          exported_json: exportedJson,
+          "dgraph.type": "Diagram",
+        }),
+      })
+        .then((response) => {
+          ElMessage.success("Program saved successfully!");
+        })
+        .catch((err) => {
+          showError("Something went wrong when saving program.");
+        });
     }
 
     function handleNewDiagram() {
@@ -410,6 +410,7 @@ export default {
             });
             throw new Error("No connection to database.");
           }
+          console.log(query);
           const diagrams = query.find_diagrams;
           listDiagrams.value = diagrams;
         })
@@ -464,7 +465,7 @@ ul {
 .save-new-diagram {
   display: block;
   position: absolute;
-  top: 6%;
+  top: 5%;
   z-index: 10;
 }
 .tools {

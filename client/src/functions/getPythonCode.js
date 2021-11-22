@@ -1,12 +1,38 @@
 import convertToCode from "./convertToCodeFunctions";
 
-export default function getPythonCode(
-  modules,
-  moduleSelected,
-  prefix = "",
-  df
-) {
+function extractCodeFromConditionalNode(df, element, prefix) {
+  let mainBlockCode = getPythonCode(
+    df,
+    `conditional-main-block-${element.id}`,
+    prefix + "    "
+  );
+
+  let elseBlockCode = getPythonCode(
+    df,
+    `conditional-else-block-${element.id}`,
+    prefix + "    "
+  );
+
+  if (mainBlockCode === "") {
+    mainBlockCode = prefix + "    pass\n";
+  }
+
+  if (elseBlockCode !== "") {
+    elseBlockCode = prefix + "else:\n" + elseBlockCode;
+  }
+
+  return prefix + element.data.pythoncode + mainBlockCode + elseBlockCode;
+}
+
+function extractCodeFromLoopNode(df, element, prefix) {
+  const loopBlock = getPythonCode(df, `loop-${element.id}`, prefix + "    ");
+
+  return prefix + element.data.pythoncode + loopBlock;
+}
+
+export default function getPythonCode(df, moduleSelected, prefix = "") {
   let code = "";
+  const modules = df.drawflow.drawflow;
   const nodes = modules[moduleSelected].data;
 
   if (nodes.length === 0) {
@@ -39,63 +65,22 @@ export default function getPythonCode(
     if (filteredNodes.length === 0) {
       break;
     }
-    const element = filteredNodes.pop();
-
-    switch (element.name) {
-      case "AssignNode":
-        removeConnectedNodes(filteredNodes, element);
-
-        code = prefix + element.data.pythoncode + code;
-        break;
+    const node = filteredNodes.pop();
+    let newCode = "";
+    removeConnectedNodes(filteredNodes, node);
+    switch (node.name) {
       case "ConditionalNode":
-        let mainBlockCode = getPythonCode(
-          modules,
-          `conditional-main-block-${element.id}`,
-          prefix + "    ",
-          df
-        );
-
-        let elseBlockCode = getPythonCode(
-          modules,
-          `conditional-else-block-${element.id}`,
-          prefix + "    ",
-          df
-        );
-
-        if (mainBlockCode === "") {
-          mainBlockCode = prefix + "    pass\n";
-        }
-
-        if (elseBlockCode !== "") {
-          elseBlockCode = prefix + "else:\n" + elseBlockCode;
-        }
-
-        code =
-          prefix +
-          element.data.pythoncode +
-          mainBlockCode +
-          elseBlockCode +
-          code;
-        break;
-      case "OperationNode":
-        removeConnectedNodes(filteredNodes, element);
-        code = prefix + element.data.pythoncode + "\n" + code;
+        newCode = extractCodeFromConditionalNode(df, node, prefix);
         break;
       case "LoopNode":
-        const loopBlock = getPythonCode(
-          modules,
-          `loop-${element.id}`,
-          prefix + "    ",
-          df
-        );
-
-        code = prefix + element.data.pythoncode + loopBlock + code;
+        newCode = extractCodeFromLoopNode(df, node, prefix);
         break;
-      case "PrintNode":
-        removeConnectedNodes(filteredNodes, element);
-        code = prefix + element.data.pythoncode + code;
+      default:
+        newCode = prefix + node.data.pythoncode;
         break;
     }
+
+    code = newCode + code;
   }
   return code;
 }
